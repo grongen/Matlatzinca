@@ -1,3 +1,8 @@
 
 bin/
+pyinstaller/build
+pyinstaller/dist
 *.pyc
+pyinstaller/matlatzinca_onedir.spec
+pyinstaller/test_binaries.bat
+pyinstaller/test_binaries.py

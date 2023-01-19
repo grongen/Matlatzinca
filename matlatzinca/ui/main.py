@@ -196,8 +196,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def get_data_path(self) -> Path:
         # In case of PyInstaller exe
         if getattr(sys, "frozen", False):
-            application_path = sys._MEIPASS
-            data_path = Path(application_path) / "data"
+            application_path = Path(sys._MEIPASS)
+            data_path = application_path / "data"
 
         # In case of regular python
         else:
@@ -388,7 +388,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         # In case of PyInstaller exe
         if getattr(sys, "frozen", False):
-            application_path = sys._MEIPASS
+            application_path = Path(sys._MEIPASS)
             indexpath = application_path / "doc" / "index.html"
 
         # In case of regular python
