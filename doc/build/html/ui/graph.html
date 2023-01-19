@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>graph.py &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="logging.py" href="logging.html" />
+    <link rel="prev" title="dialogs.py" href="dialogs.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core.html">core</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../ui.html">ui</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="conditional.html">conditional.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dialogs.html">dialogs.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">graph.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.graph.EdgePatch"><code class="docutils literal notranslate"><span class="pre">EdgePatch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.graph.GraphWidget"><code class="docutils literal notranslate"><span class="pre">GraphWidget</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.graph.NodePatch"><code class="docutils literal notranslate"><span class="pre">NodePatch</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="logging.html">logging.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="main.html">main.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix.html">matrix.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="menus.html">menus.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nodeedge.html">nodeedge.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="widgets.html">widgets.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../io.html">io.py</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../code.html">Code documentation</a></li>
+          <li class="breadcrumb-item"><a href="../ui.html">ui</a></li>
+      <li class="breadcrumb-item active">graph.py</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ui/graph.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-matlatzinca.ui.graph">
+<span id="graph-py"></span><h1>graph.py<a class="headerlink" href="#module-matlatzinca.ui.graph" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.EdgePatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.graph.</span></span><span class="sig-name descname"><span class="pre">EdgePatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parentnode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">childnode</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#EdgePatch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.EdgePatch" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.EdgePatch.deselect">
+<span class="sig-name descname"><span class="pre">deselect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#EdgePatch.deselect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.EdgePatch.deselect" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.EdgePatch.get_positions">
+<span class="sig-name descname"><span class="pre">get_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#EdgePatch.get_positions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.EdgePatch.get_positions" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.EdgePatch.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#EdgePatch.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.EdgePatch.remove" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.EdgePatch.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#EdgePatch.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.EdgePatch.select" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.EdgePatch.toggle_selection">
+<span class="sig-name descname"><span class="pre">toggle_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#EdgePatch.toggle_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.EdgePatch.toggle_selection" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.EdgePatch.update_label">
+<span class="sig-name descname"><span class="pre">update_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#EdgePatch.update_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.EdgePatch.update_label" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.EdgePatch.update_position">
+<span class="sig-name descname"><span class="pre">update_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ctail</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chead</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#EdgePatch.update_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.EdgePatch.update_position" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.graph.</span></span><span class="sig-name descname"><span class="pre">GraphWidget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mainwindow</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.change_edge_labels">
+<span class="sig-name descname"><span class="pre">change_edge_labels</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.change_edge_labels"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.change_edge_labels" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.change_node_name">
+<span class="sig-name descname"><span class="pre">change_node_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.change_node_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.change_node_name" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.connect_signals">
+<span class="sig-name descname"><span class="pre">connect_signals</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.connect_signals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.connect_signals" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.construct_widget">
+<span class="sig-name descname"><span class="pre">construct_widget</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.construct_widget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.construct_widget" title="Permalink to this definition"></a></dt>
+<dd><p>Constructs the widget.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.contextMenuEvent">
+<span class="sig-name descname"><span class="pre">contextMenuEvent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.contextMenuEvent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.contextMenuEvent" title="Permalink to this definition"></a></dt>
+<dd><p>Creates the context menu for the expert widget</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.decrease_dpi">
+<span class="sig-name descname"><span class="pre">decrease_dpi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.decrease_dpi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.decrease_dpi" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.delete_selected_object">
+<span class="sig-name descname"><span class="pre">delete_selected_object</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.delete_selected_object"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.delete_selected_object" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.deselect_all">
+<span class="sig-name descname"><span class="pre">deselect_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.deselect_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.deselect_all" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.disconnect_all">
+<span class="sig-name descname"><span class="pre">disconnect_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.disconnect_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.disconnect_all" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.get_nearest_node">
+<span class="sig-name descname"><span class="pre">get_nearest_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.get_nearest_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.get_nearest_node" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.increase_dpi">
+<span class="sig-name descname"><span class="pre">increase_dpi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.increase_dpi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.increase_dpi" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.init_edge_thread">
+<span class="sig-name descname"><span class="pre">init_edge_thread</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.init_edge_thread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.init_edge_thread" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.init_node_thread">
+<span class="sig-name descname"><span class="pre">init_node_thread</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.init_node_thread"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.init_node_thread" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.onpick">
+<span class="sig-name descname"><span class="pre">onpick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.onpick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.onpick" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.onpress">
+<span class="sig-name descname"><span class="pre">onpress</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouseevent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.onpress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.onpress" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.onrelease">
+<span class="sig-name descname"><span class="pre">onrelease</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mouseevent</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.onrelease"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.onrelease" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.plot_edge">
+<span class="sig-name descname"><span class="pre">plot_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.plot_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.plot_edge" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.plot_node">
+<span class="sig-name descname"><span class="pre">plot_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">crd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../core/models.html#matlatzinca.core.models.Node" title="matlatzinca.core.models.Node"><span class="pre">Node</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.plot_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.plot_node" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.remove_edgepatch">
+<span class="sig-name descname"><span class="pre">remove_edgepatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.remove_edgepatch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.remove_edgepatch" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.remove_node">
+<span class="sig-name descname"><span class="pre">remove_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.remove_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.remove_node" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.select_edge">
+<span class="sig-name descname"><span class="pre">select_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.select_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.select_edge" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.select_node">
+<span class="sig-name descname"><span class="pre">select_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.select_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.select_node" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.start_add_edge">
+<span class="sig-name descname"><span class="pre">start_add_edge</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.start_add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.start_add_edge" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.start_add_node">
+<span class="sig-name descname"><span class="pre">start_add_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.start_add_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.start_add_node" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.stop_threads">
+<span class="sig-name descname"><span class="pre">stop_threads</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.stop_threads"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.stop_threads" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.wait_for_node_coordinate">
+<span class="sig-name descname"><span class="pre">wait_for_node_coordinate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.wait_for_node_coordinate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.wait_for_node_coordinate" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.GraphWidget.wait_for_nodes">
+<span class="sig-name descname"><span class="pre">wait_for_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ncoords</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">progress_callback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#GraphWidget.wait_for_nodes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.GraphWidget.wait_for_nodes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.graph.</span></span><span class="sig-name descname"><span class="pre">NodePatch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">facecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'white'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgecolor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'black'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.change_position">
+<span class="sig-name descname"><span class="pre">change_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xynew</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.change_position"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.change_position" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.connect">
+<span class="sig-name descname"><span class="pre">connect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.connect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.connect" title="Permalink to this definition"></a></dt>
+<dd><p>Connect to all the events we need.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.deselect">
+<span class="sig-name descname"><span class="pre">deselect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.deselect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.deselect" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.disconnect">
+<span class="sig-name descname"><span class="pre">disconnect</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.disconnect"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.disconnect" title="Permalink to this definition"></a></dt>
+<dd><p>Disconnect all callbacks.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.on_motion">
+<span class="sig-name descname"><span class="pre">on_motion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.on_motion"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.on_motion" title="Permalink to this definition"></a></dt>
+<dd><p>Move the rectangle if the mouse is over us.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.on_press">
+<span class="sig-name descname"><span class="pre">on_press</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.on_press"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.on_press" title="Permalink to this definition"></a></dt>
+<dd><p>Check whether mouse is over us; if so, store some data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.on_release">
+<span class="sig-name descname"><span class="pre">on_release</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">event</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.on_release"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.on_release" title="Permalink to this definition"></a></dt>
+<dd><p>Clear button press information.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.remove"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.remove" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.select">
+<span class="sig-name descname"><span class="pre">select</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.select"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.select" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.toggle_selection">
+<span class="sig-name descname"><span class="pre">toggle_selection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.toggle_selection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.toggle_selection" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.graph.NodePatch.update_label">
+<span class="sig-name descname"><span class="pre">update_label</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/graph.html#NodePatch.update_label"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.graph.NodePatch.update_label" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dialogs.html" class="btn btn-neutral float-left" title="dialogs.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="logging.html" class="btn btn-neutral float-right" title="logging.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

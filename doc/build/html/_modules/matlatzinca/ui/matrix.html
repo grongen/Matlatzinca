@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>matlatzinca.ui.matrix &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">matlatzinca.ui.matrix</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for matlatzinca.ui.matrix</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.ui</span> <span class="kn">import</span> <span class="n">widgets</span><span class="p">,</span> <span class="n">conditional</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_qt5agg</span> <span class="kn">import</span> <span class="n">FigureCanvasQTAgg</span>
+<span class="kn">from</span> <span class="nn">matplotlib.collections</span> <span class="kn">import</span> <span class="n">EllipseCollection</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtWidgets</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.linewidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.labelsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;axes.titlesize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;xtick.labelsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;ytick.labelsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;grid.alpha&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.25</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;legend.handletextpad&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.4</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;legend.fontsize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;legend.labelspacing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.2</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;legend.fancybox&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;font.size&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;lines.linewidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.5</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;lines.markeredgewidth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;lines.markersize&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">rcParams</span><span class="p">[</span><span class="s2">&quot;figure.dpi&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+
+
+<div class="viewcode-block" id="MatrixWidget"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget">[docs]</a><span class="k">class</span> <span class="nc">MatrixWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mainwindow</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">construct_widget</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span> <span class="o">=</span> <span class="n">mainwindow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="n">mainwindow</span><span class="o">.</span><span class="n">signals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">mainwindow</span><span class="o">.</span><span class="n">project</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_added</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_correlation_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_correlation_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_correlation_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_reversed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_correlation_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">correlation_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_correlation_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_order_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_correlation_matrix</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">name_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">update_correlation_matrix</span><span class="p">)</span>
+
+        <span class="c1"># self.signals.nodeview_row_changed.connect(self.select_node)</span>
+        <span class="c1"># self.signals.edgeview_row_changed.connect(self.select_edge)</span>
+
+<div class="viewcode-block" id="MatrixWidget.update_correlation_matrix"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget.update_correlation_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">update_correlation_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">update_data</span><span class="p">(</span><span class="n">R</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">_node_names</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">update_plot</span><span class="p">()</span></div>
+
+        <span class="c1"># self.ax.imshow(self.project.bn.R, vmin=-1.0, vmax=1.0, cmap=&quot;RdBu&quot;)</span>
+        <span class="c1"># self.update_tick_labels()</span>
+
+<div class="viewcode-block" id="MatrixWidget.construct_widget"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget.construct_widget">[docs]</a>    <span class="k">def</span> <span class="nf">construct_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs the widget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create figure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">constrained_layout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">colspan</span><span class="o">=</span><span class="mi">24</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplot2grid</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">24</span><span class="p">),</span> <span class="n">colspan</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span> <span class="o">=</span> <span class="n">SquareCircleCorrelationMatrix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cax</span><span class="p">)</span>
+
+        <span class="c1"># Set background color</span>
+        <span class="n">bgcolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">()</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backgroundRole</span><span class="p">())</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">bgcolor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">bgcolor</span><span class="p">)</span>
+        <span class="c1"># self.figure.tight_layout()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;right&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;top&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;left&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">spines</span><span class="p">[</span><span class="s2">&quot;bottom&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">xticks</span><span class="o">=</span><span class="p">[],</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[])</span>
+        <span class="c1"># self.ax.axis((0, 1, 0, 1))</span>
+
+        <span class="c1"># Add canvas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">FigureCanvasQTAgg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>
+        <span class="c1"># print(self.canvas._dpi_ratio)</span>
+
+        <span class="c1"># Buttons</span>
+        <span class="n">cmaps</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s2">&quot;PiYG&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PRGn&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;BrBG&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PuOr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RdGy&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RdBu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RdYlBu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RdYlGn&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Spectral&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;coolwarm&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bwr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;seismic&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;viridis&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;plasma&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;cividis&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Greys&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Purples&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Blues&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Greens&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Oranges&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Reds&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;YlOrBr&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;YlOrRd&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;OrRd&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PuRd&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;RdPu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;BuPu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;GnBu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PuBu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;YlGnBu&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;PuBuGn&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;BuGn&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;YlGn&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">get_width</span><span class="p">(</span><span class="s2">&quot;Show coefs.:&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap_combobox</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">ComboboxInputLine</span><span class="p">(</span>
+            <span class="s2">&quot;Colormap:&quot;</span><span class="p">,</span> <span class="n">labelwidth</span><span class="o">=</span><span class="n">width</span><span class="p">,</span> <span class="n">items</span><span class="o">=</span><span class="n">cmaps</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s2">&quot;RdBu&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap_combobox</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap_combobox</span><span class="o">.</span><span class="n">combobox</span><span class="o">.</span><span class="n">currentIndexChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_colormap</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap_invert_checkbox</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">CheckBoxInput</span><span class="p">(</span><span class="s2">&quot;Invert:&quot;</span><span class="p">,</span> <span class="n">labelwidth</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap_invert_checkbox</span><span class="o">.</span><span class="n">checkbox</span><span class="o">.</span><span class="n">stateChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_colormap</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmin_parameter</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">ExtendedLineEdit</span><span class="p">(</span><span class="s2">&quot;Min. value:&quot;</span><span class="p">,</span> <span class="n">labelwidth</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmin_parameter</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmin_parameter</span><span class="o">.</span><span class="n">LineEdit</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmin_parameter</span><span class="o">.</span><span class="n">LineEdit</span><span class="o">.</span><span class="n">editingFinished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_cmin</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmax_parameter</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">ExtendedLineEdit</span><span class="p">(</span><span class="s2">&quot;Max. value:&quot;</span><span class="p">,</span> <span class="n">labelwidth</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmax_parameter</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmax_parameter</span><span class="o">.</span><span class="n">LineEdit</span><span class="o">.</span><span class="n">setFixedWidth</span><span class="p">(</span><span class="mi">80</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmin_parameter</span><span class="o">.</span><span class="n">LineEdit</span><span class="o">.</span><span class="n">editingFinished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_cmax</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_labels_checkbox</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">CheckBoxInput</span><span class="p">(</span><span class="s2">&quot;Show coefs.:&quot;</span><span class="p">,</span> <span class="n">labelwidth</span><span class="o">=</span><span class="n">width</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_labels_checkbox</span><span class="o">.</span><span class="n">checkbox</span><span class="o">.</span><span class="n">stateChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">disp_correlations</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_labels_checkbox</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_conditional_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span>
+            <span class="s2">&quot;Plot conditional</span><span class="se">\n</span><span class="s2">probabilities&quot;</span><span class="p">,</span>
+            <span class="n">clicked</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_conditional_probabilities</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttonlayout</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">VLayout</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmap_combobox</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmap_invert_checkbox</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmin_parameter</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cmax_parameter</span><span class="p">,</span>
+                <span class="n">widgets</span><span class="o">.</span><span class="n">HLine</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_labels_checkbox</span><span class="p">,</span>
+                <span class="n">widgets</span><span class="o">.</span><span class="n">HLine</span><span class="p">(),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">plot_conditional_button</span><span class="p">,</span>
+                <span class="s2">&quot;stretch&quot;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="c1"># self.buttonlayout.setSizeConstraint(QtWidgets.QLayout.SetMaximumSize)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">HLayout</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttonlayout</span><span class="p">],</span> <span class="n">stretch</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">1</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="MatrixWidget.plot_conditional_probabilities"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget.plot_conditional_probabilities">[docs]</a>    <span class="k">def</span> <span class="nf">plot_conditional_probabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_conditional_dialog</span> <span class="o">=</span> <span class="n">conditional</span><span class="o">.</span><span class="n">ConditionalProbabilitiesDialog</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">plot_conditional_dialog</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MatrixWidget.disp_correlations"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget.disp_correlations">[docs]</a>    <span class="k">def</span> <span class="nf">disp_correlations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">display</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">show_labels_checkbox</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">set_texts_visible</span><span class="p">(</span><span class="n">display</span><span class="p">)</span></div>
+
+    <span class="c1"># def select_node(self, oldnode, newnode):</span>
+    <span class="c1"># pass</span>
+
+    <span class="c1"># def select_edge(self, newedge, oldedge):</span>
+    <span class="c1"># self.corrmatrix.select_edge(*newedge)</span>
+
+<div class="viewcode-block" id="MatrixWidget.set_colormap"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget.set_colormap">[docs]</a>    <span class="k">def</span> <span class="nf">set_colormap</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">cmap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmap_combobox</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span>
+        <span class="n">add</span> <span class="o">=</span> <span class="s2">&quot;_r&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cmap_invert_checkbox</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="n">cmap</span> <span class="o">+</span> <span class="n">add</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">set_cmap</span><span class="p">(</span><span class="n">cmap</span> <span class="o">+</span> <span class="n">add</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cb</span><span class="o">.</span><span class="n">update_normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MatrixWidget.set_cmin"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget.set_cmin">[docs]</a>    <span class="k">def</span> <span class="nf">set_cmin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmin_parameter</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">get_clim</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">set_clim</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">current</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cb</span><span class="o">.</span><span class="n">update_normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MatrixWidget.set_cmax"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget.set_cmax">[docs]</a>    <span class="k">def</span> <span class="nf">set_cmax</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cmax_parameter</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">get_clim</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">set_clim</span><span class="p">(</span><span class="n">current</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cb</span><span class="o">.</span><span class="n">update_normal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">corrmatrix</span><span class="o">.</span><span class="n">cc</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MatrixWidget.increase_dpi"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget.increase_dpi">[docs]</a>    <span class="k">def</span> <span class="nf">increase_dpi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.1</span><span class="p">):</span>
+        <span class="n">current_dpi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">get_dpi</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_figure_dpi</span><span class="p">(</span><span class="n">current_dpi</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MatrixWidget.decrease_dpi"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.MatrixWidget.decrease_dpi">[docs]</a>    <span class="k">def</span> <span class="nf">decrease_dpi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.1</span><span class="p">):</span>
+        <span class="n">current_dpi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">get_dpi</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_figure_dpi</span><span class="p">(</span><span class="n">current_dpi</span> <span class="o">/</span> <span class="n">factor</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_figure_dpi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_dpi</span><span class="p">):</span>
+        <span class="n">current_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span>
+        <span class="n">current_dpi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">get_dpi</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">set_dpi</span><span class="p">(</span><span class="n">new_dpi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">current_size</span> <span class="o">*</span> <span class="n">current_dpi</span> <span class="o">/</span> <span class="n">new_dpi</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="TriangularCircleCorrelationMatrix"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.TriangularCircleCorrelationMatrix">[docs]</a><span class="k">class</span> <span class="nc">TriangularCircleCorrelationMatrix</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">cax</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cax</span> <span class="o">=</span> <span class="n">cax</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_correlations</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;RdBu&quot;</span>
+
+<div class="viewcode-block" id="TriangularCircleCorrelationMatrix.update_data"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.TriangularCircleCorrelationMatrix.update_data">[docs]</a>    <span class="k">def</span> <span class="nf">update_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">R</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span></div>
+
+<div class="viewcode-block" id="TriangularCircleCorrelationMatrix.update_plot"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.TriangularCircleCorrelationMatrix.update_plot">[docs]</a>    <span class="k">def</span> <span class="nf">update_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Calculate positions</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+        <span class="n">xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">sizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+
+        <span class="c1"># Remove old collection if present</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+        <span class="c1"># Create new collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="n">EllipseCollection</span><span class="p">(</span>
+            <span class="n">sizes</span><span class="p">,</span>
+            <span class="n">sizes</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">sizes</span><span class="p">),</span>
+            <span class="n">offsets</span><span class="o">=</span><span class="n">xy</span><span class="p">,</span>
+            <span class="n">units</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+            <span class="n">transOffset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cmap</span><span class="p">,</span>
+            <span class="n">clim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cc</span><span class="p">)</span>
+
+        <span class="c1"># Add colorbar (only first time, but in update function because collection is needed)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cc</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cax</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Rank correlation [-]&quot;</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">((</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mf">1.5</span> <span class="o">+</span> <span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">m</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">-</span> <span class="n">m</span><span class="p">))</span>
+
+        <span class="c1"># Update texts</span>
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xy</span><span class="p">,</span> <span class="n">rs</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">*</span><span class="n">pos</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_texts_visible</span><span class="p">()</span>
+
+        <span class="c1"># Update tick labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_ticklabels</span><span class="p">()</span>
+
+        <span class="c1"># Update grid (only needed on size change)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_tri_grid</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TriangularCircleCorrelationMatrix.set_texts_visible"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.TriangularCircleCorrelationMatrix.set_texts_visible">[docs]</a>    <span class="k">def</span> <span class="nf">set_texts_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">visible</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_correlations</span> <span class="o">=</span> <span class="n">visible</span>
+
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="p">:</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_correlations</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_ticklabels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+    <span class="k">def</span> <span class="nf">_plot_tri_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Plot grid around lower left triangle of matrix&quot;&quot;&quot;</span>
+
+        <span class="n">triux</span><span class="p">,</span> <span class="n">triuy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">triu_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">triux</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">triux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">triux</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="n">triuy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">triuy</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]</span>
+
+        <span class="n">trilx</span><span class="p">,</span> <span class="n">trily</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tril_indices</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">trilx</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">trilx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">trilx</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">trily</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">trily</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">trix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">triux</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="n">trily</span><span class="p">])</span> <span class="o">-</span> <span class="mf">0.5</span>
+        <span class="n">triy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">triuy</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="n">trilx</span><span class="p">])</span> <span class="o">-</span> <span class="mf">0.5</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">trix</span><span class="p">,</span> <span class="n">triy</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SquareCircleCorrelationMatrix"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.SquareCircleCorrelationMatrix">[docs]</a><span class="k">class</span> <span class="nc">SquareCircleCorrelationMatrix</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">cax</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cax</span> <span class="o">=</span> <span class="n">cax</span>
+        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">,)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([],</span> <span class="p">[],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="n">lw</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cb</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">texts</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># (self.edge_box,) = self.ax.plot([], [], color=&quot;red&quot;, lw=1.0, animated=True)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_correlations</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cmap</span> <span class="o">=</span> <span class="s2">&quot;RdBu&quot;</span>
+
+        <span class="c1"># self.ax.figure.canvas.mpl_connect(&quot;resize_event&quot;, self.save_background)</span>
+
+<div class="viewcode-block" id="SquareCircleCorrelationMatrix.update_data"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.SquareCircleCorrelationMatrix.update_data">[docs]</a>    <span class="k">def</span> <span class="nf">update_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">R</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span></div>
+
+<div class="viewcode-block" id="SquareCircleCorrelationMatrix.update_plot"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.SquareCircleCorrelationMatrix.update_plot">[docs]</a>    <span class="k">def</span> <span class="nf">update_plot</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Calculate positions</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">))</span>
+        <span class="c1"># noneye = np.where(~np.eye(self.R.shape[0], dtype=bool))</span>
+        <span class="n">rs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+        <span class="c1"># xx, yy = np.indices(self.R.shape)</span>
+        <span class="n">xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">eye</span> <span class="o">=</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">sizes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+
+        <span class="c1"># Remove old collection if present</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+
+        <span class="c1"># Create new collection</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span> <span class="o">=</span> <span class="n">EllipseCollection</span><span class="p">(</span>
+            <span class="n">sizes</span><span class="p">[</span><span class="o">~</span><span class="n">eye</span><span class="p">],</span>
+            <span class="n">sizes</span><span class="p">[</span><span class="o">~</span><span class="n">eye</span><span class="p">],</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">sizes</span><span class="p">[</span><span class="o">~</span><span class="n">eye</span><span class="p">]),</span>
+            <span class="n">offsets</span><span class="o">=</span><span class="n">xy</span><span class="p">[</span><span class="o">~</span><span class="n">eye</span><span class="p">],</span>
+            <span class="n">units</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span>
+            <span class="n">transOffset</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">transData</span><span class="p">,</span>
+            <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cmap</span><span class="p">,</span>
+            <span class="n">clim</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cc</span><span class="o">.</span><span class="n">set_array</span><span class="p">(</span><span class="n">rs</span><span class="p">[</span><span class="o">~</span><span class="n">eye</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_collection</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cc</span><span class="p">)</span>
+
+        <span class="c1"># Add colorbar (only first time, but in update function because collection is needed)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cb</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cc</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cax</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cb</span><span class="o">.</span><span class="n">set_label</span><span class="p">(</span><span class="s2">&quot;Rank correlation [-]&quot;</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="mf">0.05</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">((</span><span class="o">-</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">m</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.5</span> <span class="o">-</span> <span class="n">m</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">m</span><span class="p">))</span>
+
+        <span class="c1"># Update texts</span>
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">pos</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">xy</span><span class="p">,</span> <span class="n">rs</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="o">*</span><span class="n">pos</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_texts_visible</span><span class="p">()</span>
+
+        <span class="c1"># Update tick labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_ticklabels</span><span class="p">()</span>
+
+        <span class="c1"># Update grid (only needed on size change)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_plot_tri_grid</span><span class="p">()</span></div>
+
+        <span class="c1"># Save as background</span>
+        <span class="c1"># fig = self.ax.figure</span>
+        <span class="c1"># fig.canvas.draw()</span>
+        <span class="c1"># self.save_background()</span>
+
+    <span class="c1"># def save_background(self, event=None) -&gt; None:</span>
+    <span class="c1"># self.bg = self.ax.figure.canvas.copy_from_bbox(self.ax.figure.bbox)</span>
+
+<div class="viewcode-block" id="SquareCircleCorrelationMatrix.set_texts_visible"><a class="viewcode-back" href="../../../ui/matrix.html#matlatzinca.ui.matrix.SquareCircleCorrelationMatrix.set_texts_visible">[docs]</a>    <span class="k">def</span> <span class="nf">set_texts_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">visible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">visible</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">show_correlations</span> <span class="o">=</span> <span class="n">visible</span>
+
+        <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">texts</span><span class="p">:</span>
+            <span class="n">text</span><span class="o">.</span><span class="n">set_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">show_correlations</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">_update_ticklabels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_plot_tri_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Plot grid around lower left triangle of matrix&quot;&quot;&quot;</span>
+
+        <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">indices</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">)</span>
+
+        <span class="c1"># trilx, trily = np.stack(np.tril_indices(self.n + 1)).astype(float)</span>
+        <span class="c1"># pos = np.where(np.diff(trilx) != 0)[0] + 1</span>
+        <span class="c1"># trilx = np.insert(trilx, pos, np.nan)[:-1]</span>
+        <span class="c1"># trily = np.insert(trily, pos, np.nan)[:-1]</span>
+
+        <span class="n">xtot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="n">y</span><span class="p">])</span>
+        <span class="n">ytot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">y</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">],</span> <span class="n">x</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">set_data</span><span class="p">(</span><span class="n">xtot</span><span class="p">,</span> <span class="n">ytot</span><span class="p">)</span></div>
+
+    <span class="c1"># def select_edge(self, parent, child):</span>
+    <span class="c1">#     pos1 = self.labels.index(parent)</span>
+    <span class="c1">#     pos2 = self.labels.index(child)</span>
+
+    <span class="c1">#     fig = self.ax.figure</span>
+
+    <span class="c1">#     fig.canvas.restore_region(self.bg)</span>
+    <span class="c1">#     self.edge_box.set_data(</span>
+    <span class="c1">#         np.concatenate(</span>
+    <span class="c1">#             [</span>
+    <span class="c1">#                 pos1 + np.array([-0.5, 0.5, 0.5, -0.5, -0.5]),</span>
+    <span class="c1">#                 [np.nan],</span>
+    <span class="c1">#                 pos2 + np.array([-0.5, 0.5, 0.5, -0.5, -0.5]),</span>
+    <span class="c1">#             ]</span>
+    <span class="c1">#         ),</span>
+    <span class="c1">#         np.concatenate(</span>
+    <span class="c1">#             [</span>
+    <span class="c1">#                 pos2 + np.array([-0.5, -0.5, 0.5, 0.5, -0.5]),</span>
+    <span class="c1">#                 [np.nan],</span>
+    <span class="c1">#                 pos1 + np.array([-0.5, -0.5, 0.5, 0.5, -0.5]),</span>
+    <span class="c1">#             ]</span>
+    <span class="c1">#         ),</span>
+    <span class="c1">#     )</span>
+    <span class="c1">#     self.ax.draw_artist(self.edge_box)</span>
+    <span class="c1">#     fig.canvas.blit(fig.bbox)</span>
+    <span class="c1">#     # fig.canvas.draw_idle()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

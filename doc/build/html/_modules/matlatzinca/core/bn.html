@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>matlatzinca.core.bn &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">matlatzinca.core.bn</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for matlatzinca.core.bn</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">matlatzinca.core.models</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Edge</span><span class="p">,</span> <span class="n">Node</span>
+
+
+<div class="viewcode-block" id="corr_string"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.corr_string">[docs]</a><span class="k">def</span> <span class="nf">corr_string</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cond</span><span class="p">:</span> <span class="nb">tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Return a string for the partial correlation</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : Union[float, None]</span>
+<span class="sd">        Correlation coefficient</span>
+<span class="sd">    i : int</span>
+<span class="sd">        Node 1 integer</span>
+<span class="sd">    j : int</span>
+<span class="sd">        Node 2 integer</span>
+<span class="sd">    cond : tuple, optional</span>
+<span class="sd">        integers of conditional nodes. Defaults to None.</span>
+<span class="sd">    offset : int, optional</span>
+<span class="sd">        Offset all integers with a certain value. Defaults to 0.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Correlation string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">cond</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">cond</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">cond_str</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">c</span><span class="o">+</span><span class="n">offset</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cond</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">cond_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">r</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rstr</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot; = </span><span class="si">{</span><span class="n">r</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rstr</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="s2">&quot;r_&quot;</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="n">offset</span><span class="si">}</span><span class="s2">,</span><span class="si">{</span><span class="n">j</span><span class="o">+</span><span class="n">offset</span><span class="si">}{</span><span class="n">cond_str</span><span class="si">}{</span><span class="n">rstr</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="k">return</span> <span class="n">string</span></div>
+
+
+<span class="k">def</span> <span class="nf">_ranktopearson</span><span class="p">(</span><span class="n">R</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Transforming rank correlation (R) into Pearson&#39;s correlation (r)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    R : float</span>
+<span class="sd">        Rank correlation</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Pearson&#39;s correlation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">R</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">sin</span><span class="p">((</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">6</span><span class="p">)</span> <span class="o">*</span> <span class="n">R</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">r</span>
+
+
+<span class="n">_vranktopearson</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">_ranktopearson</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ranktopearson"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.ranktopearson">[docs]</a><span class="k">def</span> <span class="nf">ranktopearson</span><span class="p">(</span><span class="n">R</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper function of the non-vectorized and vectorized rank to perason function</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    R : Union[np.ndarray, float]</span>
+<span class="sd">        Rank correlation</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Union[np.ndarray, float]</span>
+<span class="sd">        Pearson&#39;s correlation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_vranktopearson</span><span class="p">(</span><span class="n">R</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_ranktopearson</span><span class="p">(</span><span class="n">R</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_pearsontorank</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Transforming Pearson&#39;s correlation (r) into rank correlation (R)</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : float</span>
+<span class="sd">        Pearson&#39;s correlation</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float</span>
+<span class="sd">        Rank correlation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">r</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">R</span> <span class="o">=</span> <span class="p">(</span><span class="mi">6</span> <span class="o">/</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">asin</span><span class="p">(</span><span class="n">r</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">R</span>
+
+
+<span class="n">_vpearsontorank</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vectorize</span><span class="p">(</span><span class="n">_pearsontorank</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="pearsontorank"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.pearsontorank">[docs]</a><span class="k">def</span> <span class="nf">pearsontorank</span><span class="p">(</span><span class="n">r</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+    <span class="sd">&quot;&quot;&quot;Wrapper function of the non-vectorized and vectorized Pearson to rank function</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    r : Union[np.ndarray, float]</span>
+<span class="sd">        Pearson&#39;s correlation</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    Union[np.ndarray, float]</span>
+<span class="sd">        Rank correlation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_vpearsontorank</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_pearsontorank</span><span class="p">(</span><span class="n">r</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BayesianNetwork"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork">[docs]</a><span class="k">class</span> <span class="nc">BayesianNetwork</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+
+    <span class="c1"># list of nodes</span>
+    <span class="n">nodes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Correlation matrix</span>
+    <span class="n">R</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span><span class="p">)</span>
+    <span class="c1"># Bounds of the observed correlation per edge</span>
+    <span class="c1"># bounds: Dict[Tuple[str, str], Tuple[float, float]] = {}</span>
+    <span class="c1"># String describing the edge</span>
+    <span class="c1"># corr_string: Dict[Tuple[str, str], str] = {}</span>
+    <span class="c1"># Dictionary with partial correlations</span>
+    <span class="n">partcorrs</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Tuple</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="c1"># List of edges. This is not used for calculations, as the nodes parents</span>
+    <span class="c1"># already contain all information on the edges</span>
+    <span class="n">edgelist</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Edge</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="BayesianNetwork.add_node"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">parents</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">rank_corrs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add node to BN</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str, optional</span>
+<span class="sd">            Name of the node. If None, a default name is chosen. Defaults to None.</span>
+<span class="sd">        parents : List[str], optional</span>
+<span class="sd">            List of parent nodes (names). Defaults to None.</span>
+<span class="sd">        rank_corrs : List[float], optional</span>
+<span class="sd">            Rank correlations corresponding to parent nodes. Defaults to None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_unused_name</span><span class="p">()</span>
+
+        <span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">parents</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">rank_corrs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">parent</span><span class="p">,</span> <span class="n">corr</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">parents</span><span class="p">,</span> <span class="n">rank_corrs</span><span class="p">):</span>
+                <span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Edge</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">cond_rank_corr</span><span class="o">=</span><span class="n">corr</span><span class="p">))</span>
+
+        <span class="n">newnode</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">edges</span><span class="o">=</span><span class="n">edges</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">newnode</span><span class="p">)</span></div>
+
+        <span class="c1"># Make sure the edges are ordered by sampling order</span>
+        <span class="c1"># self.check_sampling_order()</span>
+
+<div class="viewcode-block" id="BayesianNetwork.remove_node"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Removes a node from the project. The given node is removed.</span>
+<span class="sd">        Other nodes are checked as well for their parents, and removed</span>
+<span class="sd">        if necessary, meaning an edge is removed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str</span>
+<span class="sd">            Name of node to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">inode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">inode</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Remove edges connected to this node in other nodes</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_names</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">child</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+        <span class="c1"># Make sure the edges are ordered by sampling order</span>
+        <span class="c1"># self.check_sampling_order()</span>
+
+<div class="viewcode-block" id="BayesianNetwork.remove_edge"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.remove_edge">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Removes an edge from the BN. All node&#39;s parents are checked</span>
+<span class="sd">        and removed if matching</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parent : str</span>
+<span class="sd">            Edge origin</span>
+<span class="sd">        child : str</span>
+<span class="sd">            Edge destination</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">inode</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">inode</span><span class="p">]</span>
+
+        <span class="n">iedge</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_index</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">iedge</span><span class="p">])</span></div>
+
+        <span class="c1"># Make sure the edges are ordered by sampling order</span>
+        <span class="c1"># self.check_sampling_order()</span>
+
+    <span class="k">def</span> <span class="nf">_get_unused_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Generates a node name that is not used already</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            Generated node name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">newid</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">newname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">newid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">while</span> <span class="n">newname</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span><span class="p">:</span>
+            <span class="n">newid</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">newname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Node </span><span class="si">{</span><span class="n">newid</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">newname</span>
+
+<div class="viewcode-block" id="BayesianNetwork.add_edge"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">child_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">cond_rank_corr</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Adds an edge between two nodes to the model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parent_name : str</span>
+<span class="sd">            Name of the parent node</span>
+<span class="sd">        child_name : str</span>
+<span class="sd">            Name of the child node</span>
+<span class="sd">        cond_rank_corr : float, optional</span>
+<span class="sd">            Conditional rank correlation between the two nodes. By default 0.0.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Whether succesfull. Returns True when the result is an DAG, else False.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the edge already exists</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Check if edge is already present</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node_by_name</span><span class="p">(</span><span class="n">child_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parent_name</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_names</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;An edge from &quot;</span><span class="si">{</span><span class="n">parent_name</span><span class="si">}</span><span class="s1">&quot; to &quot;</span><span class="si">{</span><span class="n">child_name</span><span class="si">}</span><span class="s1">&quot; already exists.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Create edge</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="n">Edge</span><span class="p">(</span><span class="n">parent</span><span class="o">=</span><span class="n">parent_name</span><span class="p">,</span> <span class="n">child</span><span class="o">=</span><span class="n">child_name</span><span class="p">,</span> <span class="n">cond_rank_corr</span><span class="o">=</span><span class="n">cond_rank_corr</span><span class="p">)</span>
+
+        <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_dag</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">parent_name</span><span class="p">,</span> <span class="n">child_name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Make sure the edges are ordered by sampling order</span>
+            <span class="c1"># self.check_sampling_order()</span>
+
+            <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="BayesianNetwork.reverse_edge"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.reverse_edge">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">child_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Reverse an existing edge in the BN. This is done by removing the old edge,</span>
+<span class="sd">        adding the reversed one, checking if it is still a DAG, and if not add the</span>
+<span class="sd">        old one again.</span>
+
+<span class="sd">        Note that the observed correlations are not maintained when reversing edges.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parent_name : str</span>
+<span class="sd">            Name of the parent node, which becomes the child node</span>
+<span class="sd">        child_name : str</span>
+<span class="sd">            Name of the child node, which becomes the parent node</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            If reversing was successfull (BN still a DAG)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Get the current rank correlation</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node_by_name</span><span class="p">(</span><span class="n">child_name</span><span class="p">)</span>
+        <span class="n">cond_rank_corr</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">parent_index</span><span class="p">(</span><span class="n">parent_name</span><span class="p">)]</span><span class="o">.</span><span class="n">cond_rank_corr</span>
+
+        <span class="c1"># Remove the current edge</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">parent_name</span><span class="p">,</span> <span class="n">child_name</span><span class="p">)</span>
+
+        <span class="c1"># Add the reversed edge, and check if still DAG</span>
+        <span class="n">success</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="n">parent_name</span><span class="o">=</span><span class="n">child_name</span><span class="p">,</span> <span class="n">child_name</span><span class="o">=</span><span class="n">parent_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">success</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="c1"># If not successfull (no DAG), put the old edge back again</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span>
+                <span class="n">parent_name</span><span class="o">=</span><span class="n">parent_name</span><span class="p">,</span>
+                <span class="n">child_name</span><span class="o">=</span><span class="n">child_name</span><span class="p">,</span>
+                <span class="n">cond_rank_corr</span><span class="o">=</span><span class="n">cond_rank_corr</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_node_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Returns a list of node names&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_node_by_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Node</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Get a node object by its name&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)]</span>
+
+<div class="viewcode-block" id="BayesianNetwork.change_node_name"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.change_node_name">[docs]</a>    <span class="k">def</span> <span class="nf">change_node_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">newname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Change node name&quot;&quot;&quot;</span>
+
+        <span class="c1"># Create a list of other names</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+        <span class="n">inode</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">oldname</span><span class="p">)</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">names</span><span class="p">[</span><span class="n">inode</span><span class="p">])</span>
+
+        <span class="c1"># Check if newname is already in use by a different node</span>
+        <span class="k">if</span> <span class="n">newname</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Name &quot;</span><span class="si">{</span><span class="n">newname</span><span class="si">}</span><span class="s1">&quot; is already in use.&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Rename nodes</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node_by_name</span><span class="p">(</span><span class="n">oldname</span><span class="p">)</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">newname</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">child</span> <span class="o">=</span> <span class="n">newname</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="c1"># Change name in parents</span>
+            <span class="k">if</span> <span class="n">oldname</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_names</span><span class="p">:</span>
+                <span class="n">iparent</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_index</span><span class="p">(</span><span class="n">oldname</span><span class="p">)</span>
+                <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">iparent</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">newname</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_edge_overview</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="BayesianNetwork.create_edge_overview"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.create_edge_overview">[docs]</a>    <span class="k">def</span> <span class="nf">create_edge_overview</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Creates an internal overview of the edges&quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">[:]</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BayesianNetwork.get_valid_sampling_order"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.get_valid_sampling_order">[docs]</a>    <span class="k">def</span> <span class="nf">get_valid_sampling_order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Construct a valid sampling order. This means that the node with no</span>
+<span class="sd">        parents will be the first in the sampling order (SO) and so forth.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        List[int]</span>
+<span class="sd">            indices with the sampling order</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nnodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+
+        <span class="c1"># Add disconnected nodes to the end of the list</span>
+        <span class="n">disconnected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="c1"># Remove nodes that are a parent (and therefore connected)</span>
+            <span class="n">disconnected</span> <span class="o">=</span> <span class="n">disconnected</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">parent_names</span><span class="p">))</span>
+        <span class="n">disconnected</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">disconnected</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">disconnected</span><span class="p">):</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+            <span class="c1"># Remove nodes that do not have parents</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">disconnected</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">disconnected</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">names</span> <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">disconnected</span><span class="p">]</span>
+
+        <span class="n">unassigned</span> <span class="o">=</span> <span class="n">names</span><span class="p">[:]</span>
+
+        <span class="c1"># Constructing a valid &#39;sampling order&#39;, which means that the node with no</span>
+        <span class="c1"># parents will be the first in the sampling order (SO) and so forth.</span>
+        <span class="n">sampling_order</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">sampling_order</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">nnodes</span><span class="p">:</span>
+            <span class="c1"># Loop over all unassigned nodes</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">unassigned</span><span class="o">.</span><span class="n">copy</span><span class="p">()):</span>
+                <span class="c1"># Get the parents of the specific nodes</span>
+                <span class="c1"># parents = set(self.nodes[i].parents)</span>
+                <span class="n">unassigned_parents</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_node_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">parent_names</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">sampling_order</span><span class="p">)</span>
+                <span class="c1"># If all parents are assigned, the node can be added to the sampling order</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">unassigned_parents</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">sampling_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+                    <span class="n">unassigned</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+        <span class="n">sampling_order</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">sampling_order</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">sampling_order</span></div>
+
+<div class="viewcode-block" id="BayesianNetwork.check_sampling_order"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.check_sampling_order">[docs]</a>    <span class="k">def</span> <span class="nf">check_sampling_order</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Currently unused&quot;&quot;&quot;</span>
+
+        <span class="c1"># Get current order</span>
+        <span class="n">current_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+        <span class="c1"># Get a valid order</span>
+        <span class="n">valid_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_valid_sampling_order</span><span class="p">()</span>
+
+        <span class="c1"># If the sampling order needs to be changed</span>
+        <span class="k">if</span> <span class="n">current_order</span> <span class="o">!=</span> <span class="n">valid_order</span><span class="p">:</span>
+            <span class="c1"># Make sure the correlation matrix is up to date</span>
+            <span class="c1"># By calculating it</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">current_order</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">calculate_correlation_matrix</span><span class="p">()</span>
+
+        <span class="c1"># Change the node list to this order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">si</span><span class="p">]</span> <span class="k">for</span> <span class="n">si</span> <span class="ow">in</span> <span class="n">valid_order</span><span class="p">]</span>
+
+        <span class="c1"># Change each node&#39;s edges to this order</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">parent_index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span> <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_names</span><span class="p">]</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">]</span>
+
+        <span class="c1"># If the orders did not match, the conditional correlations need to be changed from the observed correlations</span>
+
+        <span class="k">if</span> <span class="n">current_order</span> <span class="o">!=</span> <span class="n">valid_order</span><span class="p">:</span>
+            <span class="c1"># First, change the order of the correlation matrix</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="p">[</span><span class="n">current_order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">names</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">order</span><span class="p">)]</span>
+
+            <span class="c1"># Iterate over all edges, and create conditional correlation from observed correlation, that shouldn&#39;t change</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">create_edge_overview</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">:</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">cond_rank_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_conditional_correlation</span><span class="p">(</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">child</span><span class="p">,</span>
+                    <span class="n">observed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">child</span><span class="p">)],</span>
+                <span class="p">)</span></div>
+
+<div class="viewcode-block" id="BayesianNetwork.change_parent_order"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.change_parent_order">[docs]</a>    <span class="k">def</span> <span class="nf">change_parent_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Changes the order of the parent nodes, and correspondingly changes the conditional</span>
+<span class="sd">        rank correlations as well</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        source_pos : int</span>
+<span class="sd">            Initial position</span>
+<span class="sd">        target_pos : int</span>
+<span class="sd">            Target position</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Get the current edge overview</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_edge_overview</span><span class="p">()</span>
+        <span class="c1"># Add edge on requested position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">target_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">source_pos</span><span class="p">))</span>
+        <span class="c1"># Loop through edges and put parents in observed order</span>
+        <span class="n">order_changed</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">pnames</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_names</span>
+            <span class="c1"># Get the order of parents in the user given edge order</span>
+            <span class="n">parent_order</span> <span class="o">=</span> <span class="p">[</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span> <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">child</span> <span class="o">==</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">pnames</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">parent_order</span><span class="p">]</span>
+            <span class="c1"># Reorder the edges</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[:]</span> <span class="o">=</span> <span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">index</span><span class="p">]</span>
+            <span class="c1"># Check if the order changed</span>
+            <span class="k">if</span> <span class="n">pnames</span> <span class="o">!=</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_names</span><span class="p">:</span>
+                <span class="n">order_changed</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="c1"># Create a new edge overview</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_edge_overview</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">order_changed</span><span class="p">:</span>
+            <span class="c1"># Recalculate the conditional correlations from the observed correlations</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgelist</span><span class="p">:</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">cond_rank_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_conditional_correlation</span><span class="p">(</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">child</span><span class="p">,</span>
+                    <span class="n">observed</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">),</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">child</span><span class="p">)],</span>
+                <span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_dag</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Checks whether the netwerk is a directed acyclic graph&quot;&quot;&quot;</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+
+        <span class="k">def</span> <span class="nf">_check_parents</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_names</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">for</span> <span class="n">parent_name</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_names</span><span class="p">:</span>
+                <span class="n">parent_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">parent_name</span><span class="p">)]</span>
+                <span class="n">dag</span> <span class="o">=</span> <span class="n">_check_parents</span><span class="p">(</span><span class="n">parent_node</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">dag</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">_check_parents</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="BayesianNetwork.calculate_correlation_matrix"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.calculate_correlation_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_correlation_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculates correlation matrix (i.e., non-conditional) from BN and (conditional)</span>
+<span class="sd">        rank correlations.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nnodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+
+        <span class="c1"># Initializing the correlation matrix R</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">nnodes</span><span class="p">,</span> <span class="n">nnodes</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="c1"># Clear the dictionary to save partial correlations that have been calculated</span>
+        <span class="c1"># and might be used again</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">partcorrs</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="n">sampling_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_valid_sampling_order</span><span class="p">()</span>
+        <span class="c1"># Starting the loop for recursively calculating the correlation matrix by</span>
+        <span class="c1"># the second node (the first sampling node has no parents)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nnodes</span><span class="p">):</span>
+            <span class="c1"># Get the index in the sampling order</span>
+            <span class="n">si</span> <span class="o">=</span> <span class="n">sampling_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="c1"># Variables for the looping</span>
+            <span class="n">cond</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Vector storing the conditionalized variables</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="n">parents</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span> <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">si</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">]</span>
+            <span class="c1"># Contains the previous (same order of SO!) nodes that are not parents</span>
+            <span class="n">previous_other</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">sampling_order</span><span class="p">[:</span><span class="n">i</span><span class="p">])</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">parents</span><span class="p">)</span>
+
+            <span class="c1"># Loop over all parents, and calculate the correlation between the node and its parents</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">si</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                <span class="n">j</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+                <span class="n">rpc</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">cond_rank_corr</span>
+
+                <span class="c1"># Get the rank-correlation to the parent</span>
+                <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ranktopearson</span><span class="p">(</span><span class="n">rpc</span><span class="p">)</span>
+
+                <span class="c1"># Get the conditional correlation r1,2;conditions</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">j</span><span class="p">)]</span>
+
+                <span class="c1"># Loop over all conditioning nodes in reverse order, to calculate the unconditional correlation r1,2</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cond</span><span class="p">))):</span>
+
+                    <span class="c1"># Recursivelly calculating the correlation between nodes accounting for the conditional/partial correlation</span>
+                    <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_partial_correlation</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">j</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cond</span><span class="o">=</span><span class="n">cond</span><span class="p">[:</span><span class="n">k</span><span class="p">])</span>
+
+                    <span class="c1"># Based on the conditional/partial correlation, calculating the resulting correlation coefficient</span>
+                    <span class="c1"># (all the properties of the correlation matrix are guaranteed)</span>
+                    <span class="n">shat</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">r1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">*</span> <span class="n">r1</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">shat</span>
+
+                <span class="c1"># Saving the correlation coefficients calculated in the upper and lower triangle of the matrix R.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">si</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">si</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+
+                <span class="n">cond</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+
+            <span class="c1"># Looping over the previous nodes (based on the ordering in SO) which</span>
+            <span class="c1"># are not parents, stored in previous_other.</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">previous_other</span><span class="p">:</span>
+                <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">j</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">j</span><span class="p">)]</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cond</span><span class="p">))):</span>
+                    <span class="k">if</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">s</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="c1"># Recursively calculating the correlation between nodes accounting for the conditional/partial correlation</span>
+                        <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_partial_correlation</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cond</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">k</span><span class="p">])</span>
+                        <span class="c1"># Based on the conditional/partial correlation, calculating the resulting correlation coefficient</span>
+                        <span class="c1"># (all the properties of the correlation matrix are guaranteed)</span>
+                        <span class="n">shat</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">r1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">*</span> <span class="n">r1</span>
+                        <span class="n">s</span> <span class="o">=</span> <span class="n">shat</span>
+
+                <span class="c1"># Storing the results</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">si</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">si</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+                <span class="c1"># counter += 1</span>
+                <span class="n">cond</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">pearsontorank</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BayesianNetwork.calculate_correlation_bounds"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.calculate_correlation_bounds">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_correlation_bounds</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculates the bounds of the rank correlations in the network. Specified (conditional)</span>
+<span class="sd">        rank correlation coefficients limit the range of the correlation for other edges. This function</span>
+<span class="sd">        calculates these limits, by calculating the correlation that would result from imposing a</span>
+<span class="sd">        conditional -1 and 1 correlation on the edge. This function can be used to display the</span>
+<span class="sd">        possible range of correlations to a user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">nnodes</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+
+        <span class="c1"># Convert to correlation matrix to pearson, for calculating the partial correlations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">ranktopearson</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>
+
+        <span class="n">sampling_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_valid_sampling_order</span><span class="p">()</span>
+        <span class="c1"># Starting the loop for recursively calculating the correlation matrix by</span>
+        <span class="c1"># the second node</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nnodes</span><span class="p">):</span>
+
+            <span class="n">si</span> <span class="o">=</span> <span class="n">sampling_order</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="c1"># Variables for the looping</span>
+            <span class="n">cond</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Vector storing the conditionalized variables</span>
+            <span class="n">T</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Dictionary to store temporary conditional correlations</span>
+
+            <span class="c1"># Loop over all parents, and calculate the correlation between the node and its parents</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">si</span><span class="p">]</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                <span class="n">pi</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+                <span class="n">rpc</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">cond_rank_corr</span>
+
+                <span class="c1"># Get the (conditional) rank-correlation to the parent</span>
+                <span class="c1"># First, assume the (conditional) rank-correlation is 1.0, to get the bounds</span>
+                <span class="n">s_lower</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.0</span>
+                <span class="n">s_upper</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="c1"># Get the conditional correlation r1,2;conditions</span>
+                <span class="c1"># Loop over all conditioning nodes in reverse order, to calculate the unconditional correlation r1,2</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cond</span><span class="p">))):</span>
+
+                    <span class="c1"># Recursivelly calculating the correlation between nodes accounting for the conditional/partial correlation</span>
+                    <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_partial_correlation</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cond</span><span class="o">=</span><span class="n">cond</span><span class="p">[:</span><span class="n">k</span><span class="p">],</span> <span class="n">store</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+                    <span class="c1"># Based on the conditional/partial correlation, calculating the resulting correlation coefficient</span>
+                    <span class="c1"># (all the properties of the correlation matrix are guaranteed)</span>
+                    <span class="n">p1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">r1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+                    <span class="n">p2</span> <span class="o">=</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">*</span> <span class="n">r1</span>
+                    <span class="n">shat_lower</span> <span class="o">=</span> <span class="n">s_lower</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">+</span> <span class="n">p2</span>
+                    <span class="n">s_lower</span> <span class="o">=</span> <span class="n">shat_lower</span>
+
+                    <span class="n">shat_upper</span> <span class="o">=</span> <span class="n">s_upper</span> <span class="o">*</span> <span class="n">p1</span> <span class="o">+</span> <span class="n">p2</span>
+                    <span class="n">s_upper</span> <span class="o">=</span> <span class="n">shat_upper</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cond</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">rank_corr_bounds</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">rank_corr</span> <span class="o">=</span> <span class="n">pearsontorank</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">si</span><span class="p">,</span> <span class="n">pi</span><span class="p">])</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">string</span> <span class="o">=</span> <span class="n">corr_string</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="n">si</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">rank_corr_bounds</span> <span class="o">=</span> <span class="p">(</span>
+                        <span class="n">pearsontorank</span><span class="p">(</span><span class="n">shat_lower</span><span class="p">),</span>
+                        <span class="n">pearsontorank</span><span class="p">(</span><span class="n">shat_upper</span><span class="p">),</span>
+                    <span class="p">)</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">rank_corr</span> <span class="o">=</span> <span class="n">pearsontorank</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">si</span><span class="p">,</span> <span class="n">pi</span><span class="p">])</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">string</span> <span class="o">=</span> <span class="n">corr_string</span><span class="p">(</span><span class="n">r</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="o">=</span><span class="nb">sorted</span><span class="p">(</span><span class="n">cond</span><span class="p">),</span> <span class="n">offset</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+                <span class="c1"># Second, set the actual (conditional) rank correlation, to calculate the others</span>
+                <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">pi</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ranktopearson</span><span class="p">(</span><span class="n">rpc</span><span class="p">)</span>
+                <span class="c1"># No need to do any further calculations</span>
+
+                <span class="n">cond</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+
+        <span class="c1"># Calculate rank correlations again</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">pearsontorank</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BayesianNetwork.calculate_conditional_correlation"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.calculate_conditional_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_conditional_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">observed</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Calculates conditional correlation give the rank correlation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parent : str</span>
+<span class="sd">            Parent node name</span>
+<span class="sd">        child : str</span>
+<span class="sd">            Child node name</span>
+<span class="sd">        observed : float</span>
+<span class="sd">            Observed rank correlation</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float</span>
+<span class="sd">            Conditional rank correlation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+
+        <span class="c1"># Convert to correlation matrix to pearson, for calculating the partial correlations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">ranktopearson</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>
+
+        <span class="n">si</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">si</span><span class="p">]</span>
+
+        <span class="c1"># Variables for the looping</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># Vector storing the conditionalized variables</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># Dictionary to store temporary conditional correlations</span>
+
+        <span class="c1"># Loop over all parents, and calculate the correlation between the node and its parents</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+
+            <span class="n">pi</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+            <span class="n">rpc</span> <span class="o">=</span> <span class="n">edge</span><span class="o">.</span><span class="n">cond_rank_corr</span>
+
+            <span class="c1"># Get the (conditional) rank-correlation to the parent</span>
+            <span class="c1"># First, assume the (conditional) rank-correlation is 1.0, to get the bounds</span>
+            <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">pi</span><span class="p">)]</span> <span class="o">=</span> <span class="n">ranktopearson</span><span class="p">(</span><span class="n">rpc</span><span class="p">)</span>
+            <span class="c1"># Get the conditional correlation r1,2;conditions</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">parent</span> <span class="o">!=</span> <span class="n">parent</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">pi</span><span class="p">)]</span>
+                <span class="c1"># Loop over all conditioning nodes in reverse order, to calculate the unconditional correlation r1,2</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cond</span><span class="p">))):</span>
+                    <span class="c1"># Recursivelly calculating the correlation between nodes accounting for the conditional/partial correlation</span>
+                    <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_partial_correlation</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cond</span><span class="o">=</span><span class="n">cond</span><span class="p">[:</span><span class="n">k</span><span class="p">],</span> <span class="n">store</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="c1"># Based on the conditional/partial correlation, calculating the resulting correlation coefficient</span>
+                    <span class="c1"># (all the properties of the correlation matrix are guaranteed)</span>
+                    <span class="n">shat</span> <span class="o">=</span> <span class="n">s</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">r1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">*</span> <span class="n">r1</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">shat</span>
+
+            <span class="c1"># If we reach the requested parent, we reverse the calculation, from a</span>
+            <span class="c1"># known observed correlation to a conditional correlation</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">=</span> <span class="n">ranktopearson</span><span class="p">(</span><span class="n">observed</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">cond</span><span class="p">)):</span>
+
+                    <span class="c1"># Recursivelly calculating the correlation between nodes accounting for the conditional/partial correlation</span>
+                    <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_partial_correlation</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span> <span class="n">j</span><span class="o">=</span><span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">],</span> <span class="n">cond</span><span class="o">=</span><span class="n">cond</span><span class="p">[:</span><span class="n">k</span><span class="p">],</span> <span class="n">store</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                    <span class="c1"># Based on the conditional/partial correlation, calculating the resulting correlation coefficient</span>
+                    <span class="c1"># (all the properties of the correlation matrix are guaranteed)</span>
+                    <span class="n">shat</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span> <span class="o">-</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">*</span> <span class="n">r1</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">T</span><span class="p">[(</span><span class="n">si</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="n">k</span><span class="p">])]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">r1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span>
+                    <span class="n">s</span> <span class="o">=</span> <span class="n">shat</span>
+
+                <span class="k">break</span>
+
+            <span class="n">cond</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pi</span><span class="p">)</span>
+
+        <span class="c1"># Calculate rank correlations again</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">pearsontorank</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pearsontorank</span><span class="p">(</span><span class="n">s</span><span class="p">)</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_invertible</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Whether the correlation matrix is invertible (needed to be a valid correlation matrix)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            Result</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">and</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">matrix_rank</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<div class="viewcode-block" id="BayesianNetwork.to_json"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Write the BN configuration to JSON</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        path : Path</span>
+<span class="sd">            Destination path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">exclude</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;R&quot;</span><span class="p">,</span> <span class="s2">&quot;partcorrs&quot;</span><span class="p">,</span> <span class="s2">&quot;edgelist&quot;</span><span class="p">}))</span></div>
+
+<div class="viewcode-block" id="BayesianNetwork.calculate_partial_correlation"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.calculate_partial_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_partial_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">j</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">cond</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">store</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Calculates the partial correlation with a recursive approach</span>
+<span class="sd">        and returns both the partial correlations r and a list L containing</span>
+<span class="sd">        information about the partial correlations during the recursive calculation</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        i : int</span>
+<span class="sd">            row index R to calculate the correlation</span>
+<span class="sd">        j : int</span>
+<span class="sd">            column index R to calculate the correlation</span>
+<span class="sd">        cond : list</span>
+<span class="sd">            conditioning variable(s)</span>
+<span class="sd">        store : bool</span>
+<span class="sd">            whether to save the calculated correlation or not (in that case, overwrite)</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        r : float</span>
+<span class="sd">            partial correlation r</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Defining the number of conditioning variables</span>
+        <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">cond</span><span class="p">)</span>
+
+        <span class="c1"># If the conditioning variable vector is empty, then the value is</span>
+        <span class="c1"># obtained from the correlation matrix</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">r</span>
+
+        <span class="c1"># Ordering of the indeces</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;=</span> <span class="n">j</span><span class="p">:</span>
+            <span class="n">isort</span><span class="p">,</span> <span class="n">jsort</span> <span class="o">=</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">isort</span><span class="p">,</span> <span class="n">jsort</span> <span class="o">=</span> <span class="n">j</span><span class="p">,</span> <span class="n">i</span>
+
+        <span class="c1"># Extracting information on the cell L (from previous calculations)</span>
+        <span class="n">comb</span> <span class="o">=</span> <span class="p">(</span><span class="n">isort</span><span class="p">,</span> <span class="n">jsort</span><span class="p">)</span> <span class="o">+</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cond</span><span class="p">)</span>
+
+        <span class="c1"># If requested partial correlation is already calculated, return</span>
+        <span class="k">if</span> <span class="n">comb</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">partcorrs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">partcorrs</span><span class="p">[</span><span class="n">comb</span><span class="p">]</span>
+
+        <span class="c1"># If not, the correlation still needs to be calculated</span>
+        <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_partial_correlation</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">r2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_partial_correlation</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cond</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">])</span>
+        <span class="n">r3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">calculate_partial_correlation</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">cond</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cond</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">n</span><span class="p">])</span>
+
+        <span class="c1"># Calculating partial correlation of [(i,j) | (cond(1),cond(2:n))]</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="n">r1</span> <span class="o">-</span> <span class="n">r2</span> <span class="o">*</span> <span class="n">r3</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">r2</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">r3</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">))</span> <span class="o">**</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+
+        <span class="c1"># Limit r to [-1, 1]. Numerical inaccuracies can cause it to be slightly outside this range</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">r</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="c1"># print(r)</span>
+        <span class="c1"># assert r &gt;= -1 and r &lt;= 1</span>
+
+        <span class="c1"># Saving the results</span>
+        <span class="k">if</span> <span class="n">store</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">partcorrs</span><span class="p">[</span><span class="n">comb</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span>
+
+        <span class="k">return</span> <span class="n">r</span></div>
+
+<div class="viewcode-block" id="BayesianNetwork.draw_mvn_sample"><a class="viewcode-back" href="../../../core/bn.html#matlatzinca.core.bn.BayesianNetwork.draw_mvn_sample">[docs]</a>    <span class="k">def</span> <span class="nf">draw_mvn_sample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">nodes</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Draw a multivariate normal sample with size for nodes. The sample</span>
+<span class="sd">        is distributed following the multivariate normal distribution that follows from the BN.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        size : int</span>
+<span class="sd">            Sample size</span>
+<span class="sd">        nodes : list, optional</span>
+<span class="sd">            Nodes to include in sample. If None, all are included, by default None</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray</span>
+<span class="sd">            Random sample</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cov</span> <span class="o">=</span> <span class="n">ranktopearson</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">R</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">nodes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)),</span> <span class="n">cov</span><span class="o">=</span><span class="n">cov</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_node_names</span>
+            <span class="n">order</span> <span class="o">=</span> <span class="p">[</span><span class="n">names</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">multivariate_normal</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)),</span> <span class="n">cov</span><span class="o">=</span><span class="n">cov</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ix_</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="n">order</span><span class="p">)],</span> <span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

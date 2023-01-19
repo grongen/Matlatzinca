@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>bn.py &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="models.py" href="models.html" />
+    <link rel="prev" title="core" href="../core.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code documentation</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../core.html">core</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="#">bn.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.core.bn.BayesianNetwork"><code class="docutils literal notranslate"><span class="pre">BayesianNetwork</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.core.bn.corr_string"><code class="docutils literal notranslate"><span class="pre">corr_string()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.core.bn.pearsontorank"><code class="docutils literal notranslate"><span class="pre">pearsontorank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.core.bn.ranktopearson"><code class="docutils literal notranslate"><span class="pre">ranktopearson()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="models.html">models.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="project.html">project.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="threads.html">threads.py</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../ui.html">ui</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../io.html">io.py</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../code.html">Code documentation</a></li>
+          <li class="breadcrumb-item"><a href="../core.html">core</a></li>
+      <li class="breadcrumb-item active">bn.py</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/core/bn.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-matlatzinca.core.bn">
+<span id="bn-py"></span><h1>bn.py<a class="headerlink" href="#module-matlatzinca.core.bn" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.core.bn.</span></span><span class="sig-name descname"><span class="pre">BayesianNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="models.html#matlatzinca.core.models.Node" title="matlatzinca.core.models.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">array([],</span> <span class="pre">shape=(0,</span> <span class="pre">0),</span> <span class="pre">dtype=float64)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partcorrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edgelist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="models.html#matlatzinca.core.models.Edge" title="matlatzinca.core.models.Edge"><span class="pre">Edge</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">[]</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="models.html#matlatzinca.core.models.BaseModel" title="matlatzinca.core.models.BaseModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.R">
+<span class="sig-name descname"><span class="pre">R</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.add_edge">
+<span class="sig-name descname"><span class="pre">add_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cond_rank_corr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.add_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.add_edge" title="Permalink to this definition"></a></dt>
+<dd><p>Adds an edge between two nodes to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent_name</strong> (<em>str</em>) – Name of the parent node</p></li>
+<li><p><strong>child_name</strong> (<em>str</em>) – Name of the child node</p></li>
+<li><p><strong>cond_rank_corr</strong> (<em>float</em><em>, </em><em>optional</em>) – Conditional rank correlation between the two nodes. By default 0.0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Whether succesfull. Returns True when the result is an DAG, else False.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the edge already exists</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.add_node">
+<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank_corrs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.add_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.add_node" title="Permalink to this definition"></a></dt>
+<dd><p>Add node to BN</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the node. If None, a default name is chosen. Defaults to None.</p></li>
+<li><p><strong>parents</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – List of parent nodes (names). Defaults to None.</p></li>
+<li><p><strong>rank_corrs</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Rank correlations corresponding to parent nodes. Defaults to None.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.calculate_conditional_correlation">
+<span class="sig-name descname"><span class="pre">calculate_conditional_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">observed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.calculate_conditional_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.calculate_conditional_correlation" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates conditional correlation give the rank correlation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>str</em>) – Parent node name</p></li>
+<li><p><strong>child</strong> (<em>str</em>) – Child node name</p></li>
+<li><p><strong>observed</strong> (<em>float</em>) – Observed rank correlation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Conditional rank correlation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.calculate_correlation_bounds">
+<span class="sig-name descname"><span class="pre">calculate_correlation_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.calculate_correlation_bounds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.calculate_correlation_bounds" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the bounds of the rank correlations in the network. Specified (conditional)
+rank correlation coefficients limit the range of the correlation for other edges. This function
+calculates these limits, by calculating the correlation that would result from imposing a
+conditional -1 and 1 correlation on the edge. This function can be used to display the
+possible range of correlations to a user.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.calculate_correlation_matrix">
+<span class="sig-name descname"><span class="pre">calculate_correlation_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.calculate_correlation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.calculate_correlation_matrix" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates correlation matrix (i.e., non-conditional) from BN and (conditional)
+rank correlations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.calculate_partial_correlation">
+<span class="sig-name descname"><span class="pre">calculate_partial_correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">store</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.calculate_partial_correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.calculate_partial_correlation" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the partial correlation with a recursive approach
+and returns both the partial correlations r and a list L containing
+information about the partial correlations during the recursive calculation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>i</strong> (<em>int</em>) – row index R to calculate the correlation</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – column index R to calculate the correlation</p></li>
+<li><p><strong>cond</strong> (<em>list</em>) – conditioning variable(s)</p></li>
+<li><p><strong>store</strong> (<em>bool</em>) – whether to save the calculated correlation or not (in that case, overwrite)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><strong>r</strong> – partial correlation r</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.change_node_name">
+<span class="sig-name descname"><span class="pre">change_node_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">oldname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">newname</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.change_node_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.change_node_name" title="Permalink to this definition"></a></dt>
+<dd><p>Change node name</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.change_parent_order">
+<span class="sig-name descname"><span class="pre">change_parent_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.change_parent_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.change_parent_order" title="Permalink to this definition"></a></dt>
+<dd><p>Changes the order of the parent nodes, and correspondingly changes the conditional
+rank correlations as well</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_pos</strong> (<em>int</em>) – Initial position</p></li>
+<li><p><strong>target_pos</strong> (<em>int</em>) – Target position</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.check_sampling_order">
+<span class="sig-name descname"><span class="pre">check_sampling_order</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.check_sampling_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.check_sampling_order" title="Permalink to this definition"></a></dt>
+<dd><p>Currently unused</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.create_edge_overview">
+<span class="sig-name descname"><span class="pre">create_edge_overview</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.create_edge_overview"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.create_edge_overview" title="Permalink to this definition"></a></dt>
+<dd><p>Creates an internal overview of the edges</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.draw_mvn_sample">
+<span class="sig-name descname"><span class="pre">draw_mvn_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.draw_mvn_sample"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.draw_mvn_sample" title="Permalink to this definition"></a></dt>
+<dd><p>Draw a multivariate normal sample with size for nodes. The sample
+is distributed following the multivariate normal distribution that follows from the BN.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>size</strong> (<em>int</em>) – Sample size</p></li>
+<li><p><strong>nodes</strong> (<em>list</em><em>, </em><em>optional</em>) – Nodes to include in sample. If None, all are included, by default None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Random sample</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.edgelist">
+<span class="sig-name descname"><span class="pre">edgelist</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="models.html#matlatzinca.core.models.Edge" title="matlatzinca.core.models.Edge"><span class="pre">Edge</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.edgelist" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.get_valid_sampling_order">
+<span class="sig-name descname"><span class="pre">get_valid_sampling_order</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.get_valid_sampling_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.get_valid_sampling_order" title="Permalink to this definition"></a></dt>
+<dd><p>Construct a valid sampling order. This means that the node with no
+parents will be the first in the sampling order (SO) and so forth.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>indices with the sampling order</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.is_dag">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_dag</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.is_dag" title="Permalink to this definition"></a></dt>
+<dd><p>Checks whether the netwerk is a directed acyclic graph</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.is_invertible">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_invertible</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.is_invertible" title="Permalink to this definition"></a></dt>
+<dd><p>Whether the correlation matrix is invertible (needed to be a valid correlation matrix)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Result</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.nodes">
+<span class="sig-name descname"><span class="pre">nodes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="models.html#matlatzinca.core.models.Node" title="matlatzinca.core.models.Node"><span class="pre">Node</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.nodes" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.partcorrs">
+<span class="sig-name descname"><span class="pre">partcorrs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.partcorrs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.remove_edge">
+<span class="sig-name descname"><span class="pre">remove_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.remove_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.remove_edge" title="Permalink to this definition"></a></dt>
+<dd><p>Removes an edge from the BN. All node’s parents are checked
+and removed if matching</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent</strong> (<em>str</em>) – Edge origin</p></li>
+<li><p><strong>child</strong> (<em>str</em>) – Edge destination</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.remove_node">
+<span class="sig-name descname"><span class="pre">remove_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.remove_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.remove_node" title="Permalink to this definition"></a></dt>
+<dd><p>Removes a node from the project. The given node is removed.
+Other nodes are checked as well for their parents, and removed
+if necessary, meaning an edge is removed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Name of node to remove.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.reverse_edge">
+<span class="sig-name descname"><span class="pre">reverse_edge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.reverse_edge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.reverse_edge" title="Permalink to this definition"></a></dt>
+<dd><p>Reverse an existing edge in the BN. This is done by removing the old edge,
+adding the reversed one, checking if it is still a DAG, and if not add the
+old one again.</p>
+<p>Note that the observed correlations are not maintained when reversing edges.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent_name</strong> (<em>str</em>) – Name of the parent node, which becomes the child node</p></li>
+<li><p><strong>child_name</strong> (<em>str</em>) – Name of the child node, which becomes the parent node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>If reversing was successfull (BN still a DAG)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.BayesianNetwork.to_json">
+<span class="sig-name descname"><span class="pre">to_json</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#BayesianNetwork.to_json"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.BayesianNetwork.to_json" title="Permalink to this definition"></a></dt>
+<dd><p>Write the BN configuration to JSON</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>path</strong> (<em>Path</em>) – Destination path</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.corr_string">
+<span class="sig-prename descclassname"><span class="pre">matlatzinca.core.bn.</span></span><span class="sig-name descname"><span class="pre">corr_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">i</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cond</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#corr_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.corr_string" title="Permalink to this definition"></a></dt>
+<dd><p>Return a string for the partial correlation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>r</strong> (<em>Union</em><em>[</em><em>float</em><em>, </em><em>None</em><em>]</em>) – Correlation coefficient</p></li>
+<li><p><strong>i</strong> (<em>int</em>) – Node 1 integer</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – Node 2 integer</p></li>
+<li><p><strong>cond</strong> (<em>tuple</em><em>, </em><em>optional</em>) – integers of conditional nodes. Defaults to None.</p></li>
+<li><p><strong>offset</strong> (<em>int</em><em>, </em><em>optional</em>) – Offset all integers with a certain value. Defaults to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Correlation string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.pearsontorank">
+<span class="sig-prename descclassname"><span class="pre">matlatzinca.core.bn.</span></span><span class="sig-name descname"><span class="pre">pearsontorank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">r</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#pearsontorank"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.pearsontorank" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper function of the non-vectorized and vectorized Pearson to rank function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>r</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>float</em><em>]</em>) – Pearson’s correlation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Rank correlation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[np.ndarray, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="matlatzinca.core.bn.ranktopearson">
+<span class="sig-prename descclassname"><span class="pre">matlatzinca.core.bn.</span></span><span class="sig-name descname"><span class="pre">ranktopearson</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">R</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/matlatzinca/core/bn.html#ranktopearson"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.core.bn.ranktopearson" title="Permalink to this definition"></a></dt>
+<dd><p>Wrapper function of the non-vectorized and vectorized rank to perason function</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>R</strong> (<em>Union</em><em>[</em><em>np.ndarray</em><em>, </em><em>float</em><em>]</em>) – Rank correlation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pearson’s correlation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Union[np.ndarray, float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../core.html" class="btn btn-neutral float-left" title="core" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="models.html" class="btn btn-neutral float-right" title="models.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>matlatzinca.ui.main &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">matlatzinca.ui.main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for matlatzinca.ui.main</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span> <span class="nn">matlatzinca.core.models</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.core.project</span> <span class="kn">import</span> <span class="n">Project</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.ui</span> <span class="kn">import</span> <span class="n">widgets</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.ui.dialogs</span> <span class="kn">import</span> <span class="n">NotificationDialog</span><span class="p">,</span> <span class="n">get_icon</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.ui.graph</span> <span class="kn">import</span> <span class="n">GraphWidget</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.ui.logging</span> <span class="kn">import</span> <span class="n">initialize_logger</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.ui.matrix</span> <span class="kn">import</span> <span class="n">MatrixWidget</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.ui.nodeedge</span> <span class="kn">import</span> <span class="n">NodeEdgeWidget</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span><span class="p">,</span> <span class="n">QtWidgets</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="c1"># TODO: Square icon</span>
+
+
+<div class="viewcode-block" id="Signals"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.Signals">[docs]</a><span class="k">class</span> <span class="nc">Signals</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QObject</span><span class="p">):</span>
+
+    <span class="n">lists_about_to_change</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+    <span class="n">lists_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+
+    <span class="n">node_about_to_be_added</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+    <span class="n">node_coordinate_selected</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">)</span>
+    <span class="n">node_added</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="n">Node</span><span class="p">)</span>
+
+    <span class="n">node_about_to_be_removed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="n">node_removed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="c1"># sampling_order_about_to_change = QtCore.pyqtSignal(int, int)</span>
+    <span class="c1"># sampling_order_changed = QtCore.pyqtSignal()</span>
+
+    <span class="n">node_order_about_to_change</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="n">node_order_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+
+    <span class="n">parent_order_about_to_change</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span>
+    <span class="n">parent_order_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+
+    <span class="n">name_about_to_change</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">name_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+
+    <span class="n">edge_about_to_be_added</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+    <span class="n">edge_nodes_selected</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">edge_added</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+    <span class="n">edge_about_to_be_removed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">edge_removed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+    <span class="n">edge_about_to_be_reversed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">edge_reversed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+
+    <span class="n">observed_correlation_about_to_change</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">correlation_about_to_change</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">correlation_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+
+    <span class="n">on_click_delete_about_to_happen</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+    <span class="n">stop_running_click_threads</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+
+    <span class="n">set_graph_message</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+
+    <span class="n">font_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">()</span>
+
+    <span class="n">set_window_modified</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+
+    <span class="n">selected</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">object</span><span class="p">)</span>
+    <span class="n">nodeview_row_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
+    <span class="n">edgeview_row_changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">pyqtSignal</span><span class="p">(</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span> <span class="o">=</span> <span class="n">parent</span>
+
+<div class="viewcode-block" id="Signals.connect"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.Signals.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="c1"># Change edge labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_added</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">change_edge_labels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">change_edge_labels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">change_edge_labels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_reversed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">change_edge_labels</span><span class="p">)</span>
+        <span class="c1"># self.sampling_order_changed.connect(self.mainwindow.graph_widget.change_edge_labels)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_order_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">change_edge_labels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_order_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">change_edge_labels</span><span class="p">)</span>
+
+        <span class="c1"># Connect window modified signals here</span>
+        <span class="c1"># Connect node related</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_added</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="c1"># self.sampling_order_changed.connect(lambda: self.set_window_modified.emit(True))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_order_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="c1"># Connect edge related</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_added</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_reversed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">correlation_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent_order_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">True</span><span class="p">))</span>
+
+        <span class="c1"># Connect update correlation matrix signals</span>
+        <span class="c1"># self.node_added.connect(lambda: self.mainwindow.matrix_widget.update_correlation_matrix)</span>
+        <span class="c1"># self.node_removed.connect(lambda: self.mainwindow.matrix_widget.update_correlation_matrix)</span>
+        <span class="c1"># self.node_order_changed.connect(lambda: self.mainwindow.matrix_widget.update_correlation_matrix)</span>
+        <span class="c1"># self.name_changed.connect(lambda: self.mainwindow.matrix_widget.update_correlation_matrix)</span>
+        <span class="c1"># self.edge_removed.connect(lambda: self.mainwindow.matrix_widget.update_correlation_matrix)</span>
+        <span class="c1"># self.edge_reversed.connect(lambda: self.mainwindow.matrix_widget.update_correlation_matrix)</span>
+        <span class="c1"># self.correlation_changed.connect(lambda: self.mainwindow.matrix_widget.update_correlation_matrix)</span>
+
+        <span class="c1"># Connect print signals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span>
+            <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Clicked </span><span class="si">{</span><span class="s1">&#39;edge&#39;</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;node&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">s</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MainWindow"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.MainWindow">[docs]</a><span class="k">class</span> <span class="nc">MainWindow</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMainWindow</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main UI widget of Anduryl.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructer. Adds project and sets general settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">app</span> <span class="o">=</span> <span class="n">app</span>
+        <span class="c1"># custom_font = QtGui.QFont()</span>
+        <span class="c1"># custom_font.setPointSize(10)</span>
+        <span class="c1"># app.setFont(custom_font)  # , &quot;QPushButton&quot;)</span>
+        <span class="c1"># app.setFont(custom_font, &quot;QTableView&quot;)</span>
+        <span class="c1"># app.setFont(custom_font, &quot;QTableView&quot;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">appsettings</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QSettings</span><span class="p">(</span><span class="s2">&quot;Matlatzinca&quot;</span><span class="p">)</span>
+
+        <span class="c1"># font = self.app.font()</span>
+        <span class="c1"># font.setPixelSize(18)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAcceptDrops</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Matlatzinca&quot;</span><span class="p">)</span>
+
+        <span class="n">initialize_logger</span><span class="p">(</span><span class="n">console</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">profiling</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data_path</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">icon</span> <span class="o">=</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data_path</span> <span class="o">/</span> <span class="s2">&quot;icon.ico&quot;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setWindowIcon</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="p">)</span>
+
+        <span class="c1"># Add signals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="n">Signals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setWindowModified</span><span class="p">)</span>
+
+        <span class="c1"># Add keyboard shortcuts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_add_node</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QShortcut</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="p">(</span><span class="s2">&quot;Ctrl+1&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_add_node</span><span class="o">.</span><span class="n">activated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_about_to_be_added</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_add_edge</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QShortcut</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="p">(</span><span class="s2">&quot;Ctrl+2&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shortcut_add_edge</span><span class="o">.</span><span class="n">activated</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_about_to_be_added</span><span class="p">)</span>
+
+        <span class="c1"># Add project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">Project</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_projectname</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCursor</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ArrowCursor</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bordercolor</span> <span class="o">=</span> <span class="s2">&quot;lightgrey&quot;</span>
+        <span class="c1"># Construct user interface</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_ui</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+
+        <span class="c1"># Keep track of font size increment, for opening new windows</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">font_increment</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">def</span> <span class="nf">test_exception_hook</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tback</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Function that catches errors and gives a Notification</span>
+<span class="sd">            instead of a crashing application.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">__excepthook__</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tback</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setCursorNormal</span><span class="p">()</span>
+            <span class="n">NotificationDialog</span><span class="p">(</span>
+                <span class="n">text</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_exception_only</span><span class="p">(</span><span class="n">exctype</span><span class="p">,</span> <span class="n">value</span><span class="p">)),</span>
+                <span class="n">severity</span><span class="o">=</span><span class="s2">&quot;critical&quot;</span><span class="p">,</span>
+                <span class="n">details</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">traceback</span><span class="o">.</span><span class="n">format_tb</span><span class="p">(</span><span class="n">tback</span><span class="p">)),</span>
+            <span class="p">)</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">excepthook</span> <span class="o">=</span> <span class="n">test_exception_hook</span>
+
+    <span class="c1"># def resizeEvent(self, event):</span>
+    <span class="c1">#     print(&quot;Window has been resized&quot;)</span>
+    <span class="c1">#     QtWidgets.QMainWindow.resizeEvent(self, event)</span>
+
+<div class="viewcode-block" id="MainWindow.get_data_path"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.MainWindow.get_data_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_data_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+        <span class="c1"># In case of PyInstaller exe</span>
+        <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">sys</span><span class="p">,</span> <span class="s2">&quot;frozen&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">application_path</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_MEIPASS</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">application_path</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
+
+        <span class="c1"># In case of regular python</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">application_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span>
+            <span class="n">data_path</span> <span class="o">=</span> <span class="n">application_path</span> <span class="o">/</span> <span class="s2">&quot;..&quot;</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span>
+
+        <span class="k">return</span> <span class="n">data_path</span></div>
+
+<div class="viewcode-block" id="MainWindow.setCursorNormal"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.MainWindow.setCursorNormal">[docs]</a>    <span class="k">def</span> <span class="nf">setCursorNormal</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes cursor (back) to normal cursor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Qt</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">restoreOverrideCursor</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.setCursorWait"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.MainWindow.setCursorWait">[docs]</a>    <span class="k">def</span> <span class="nf">setCursorWait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes cursor to waiting cursor.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Qt</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">setOverrideCursor</span><span class="p">(</span><span class="n">Qt</span><span class="o">.</span><span class="n">QCursor</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">WaitCursor</span><span class="p">))</span>
+        <span class="n">Qt</span><span class="o">.</span><span class="n">QApplication</span><span class="o">.</span><span class="n">processEvents</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.init_ui"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.MainWindow.init_ui">[docs]</a>    <span class="k">def</span> <span class="nf">init_ui</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Construct UI, by splitting the main window and adding the</span>
+<span class="sd">        different widgets with tables.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">mainsplitter</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSplitter</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setCentralWidget</span><span class="p">(</span><span class="n">mainsplitter</span><span class="p">)</span>
+
+        <span class="c1"># GraphWidget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph_widget</span> <span class="o">=</span> <span class="n">GraphWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># MatrixWidget</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">matrix_widget</span> <span class="o">=</span> <span class="n">MatrixWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="c1"># Lists of Nodes and Edges</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes_edges_widget</span> <span class="o">=</span> <span class="n">NodeEdgeWidget</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">rightsplitter</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">LogoSplitter</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix_widget</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes_edges_widget</span><span class="p">,</span> <span class="s2">&quot;Correlation Matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;Nodes and Edges&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rightsplitter</span><span class="o">.</span><span class="n">setSizes</span><span class="p">([</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">])</span>
+
+        <span class="n">mainsplitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph_widget</span><span class="p">)</span>
+        <span class="n">mainsplitter</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rightsplitter</span><span class="p">)</span>
+        <span class="n">mainsplitter</span><span class="o">.</span><span class="n">setSizes</span><span class="p">([</span><span class="mi">500</span><span class="p">,</span> <span class="mi">500</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_menubar</span><span class="p">()</span>
+
+        <span class="n">mainsplitter</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;QSplitter::handle{background:white}&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rightsplitter</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;QSplitter::handle{background:white}&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setGeometry</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">1200</span><span class="p">,</span> <span class="mi">650</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.change_font_size"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.MainWindow.change_font_size">[docs]</a>    <span class="k">def</span> <span class="nf">change_font_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">increment</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes_edges_widget</span><span class="o">.</span><span class="n">nodemodel</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes_edges_widget</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="n">sizes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">app</span><span class="o">.</span><span class="n">allWidgets</span><span class="p">():</span>
+            <span class="n">font</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">font</span><span class="p">()</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">font</span><span class="o">.</span><span class="n">pointSize</span><span class="p">()</span> <span class="o">+</span> <span class="n">increment</span>
+            <span class="n">font</span><span class="o">.</span><span class="n">setPointSize</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">size</span><span class="p">))</span>
+            <span class="n">sizes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+            <span class="n">w</span><span class="o">.</span><span class="n">setFont</span><span class="p">(</span><span class="n">font</span><span class="p">)</span>
+
+        <span class="c1"># Keep track of font increment for opening new windows in the right scale</span>
+        <span class="c1"># Only if the smallest item has a &gt;= 1 size, the increment is added, to prevent the value getting out of bounds</span>
+        <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">sizes</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">font_increment</span> <span class="o">+=</span> <span class="n">increment</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">font_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes_edges_widget</span><span class="o">.</span><span class="n">nodemodel</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes_edges_widget</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MainWindow.update_projectname"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.MainWindow.update_projectname">[docs]</a>    <span class="k">def</span> <span class="nf">update_projectname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates window title after a project has been loaded</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        name : str, optional</span>
+<span class="sd">            Project name, by default None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="s2">&quot;Matlatzinca [*]&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">appsettings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s2">&quot;currentproject&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setWindowTitle</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Matlatzinca - </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> [*]&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">appsettings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s2">&quot;currentproject&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MainWindow.init_menubar"><a class="viewcode-back" href="../../../ui/main.html#matlatzinca.ui.main.MainWindow.init_menubar">[docs]</a>    <span class="k">def</span> <span class="nf">init_menubar</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs the menu bar.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">menubar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">menuBar</span><span class="p">()</span>
+
+        <span class="n">new_action</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_FileIcon</span><span class="p">),</span> <span class="s2">&quot;New&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">new_action</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">New</span><span class="p">)</span>
+        <span class="n">new_action</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s2">&quot;Create a new project&quot;</span><span class="p">)</span>
+        <span class="n">new_action</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
+
+        <span class="n">openAction</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_DirOpenIcon</span><span class="p">),</span> <span class="s2">&quot;Open&quot;</span><span class="p">,</span> <span class="bp">self</span>
+        <span class="p">)</span>
+        <span class="n">openAction</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s2">&quot;Open project&quot;</span><span class="p">)</span>
+        <span class="n">openAction</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">Open</span><span class="p">)</span>
+        <span class="n">openAction</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">open</span><span class="p">)</span>
+
+        <span class="n">saveAction</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_DialogSaveButton</span><span class="p">),</span> <span class="s2">&quot;Save&quot;</span><span class="p">,</span> <span class="bp">self</span>
+        <span class="p">)</span>
+        <span class="n">saveAction</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s2">&quot;Save project&quot;</span><span class="p">)</span>
+        <span class="n">saveAction</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="o">.</span><span class="n">Save</span><span class="p">)</span>
+        <span class="n">saveAction</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">save</span><span class="p">)</span>
+
+        <span class="n">saveAsAction</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_DialogSaveButton</span><span class="p">),</span> <span class="s2">&quot;Save as&quot;</span><span class="p">,</span> <span class="bp">self</span>
+        <span class="p">)</span>
+        <span class="n">saveAsAction</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s2">&quot;Save project as...&quot;</span><span class="p">)</span>
+        <span class="n">saveAsAction</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s2">&quot;Ctrl+Shift+S&quot;</span><span class="p">)</span>
+        <span class="n">saveAsAction</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">save_as</span><span class="p">)</span>
+
+        <span class="n">exitAction</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QAction</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">style</span><span class="p">()</span><span class="o">.</span><span class="n">standardIcon</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyle</span><span class="o">.</span><span class="n">SP_TitleBarCloseButton</span><span class="p">),</span> <span class="s2">&quot;Exit&quot;</span><span class="p">,</span> <span class="bp">self</span>
+        <span class="p">)</span>
+        <span class="n">exitAction</span><span class="o">.</span><span class="n">setShortcut</span><span class="p">(</span><span class="s2">&quot;Ctrl+Q&quot;</span><span class="p">)</span>
+        <span class="n">exitAction</span><span class="o">.</span><span class="n">setStatusTip</span><span class="p">(</span><span class="s2">&quot;Close Matlatzinca&quot;</span><span class="p">)</span>
+        <span class="n">exitAction</span><span class="o">.</span><span class="n">triggered</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>
+
+        <span class="n">file_menu</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;&amp;File&quot;</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">new_action</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">openAction</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">saveAction</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">saveAsAction</span><span class="p">)</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+        <span class="n">file_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="n">exitAction</span><span class="p">)</span>
+
+        <span class="n">view_menu</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;&amp;View&quot;</span><span class="p">)</span>
+        <span class="n">view_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span>
+            <span class="s2">&quot;Increase UI font&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_font_size</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="p">(</span><span class="s2">&quot;Ctrl+=&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">view_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span>
+            <span class="s2">&quot;Decrease UI font&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">change_font_size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="p">(</span><span class="s2">&quot;Ctrl+-&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">view_menu</span><span class="o">.</span><span class="n">addSeparator</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">_increase_dpi</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">increase_dpi</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix_widget</span><span class="o">.</span><span class="n">increase_dpi</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">_decrease_dpi</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">graph_widget</span><span class="o">.</span><span class="n">decrease_dpi</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">matrix_widget</span><span class="o">.</span><span class="n">decrease_dpi</span><span class="p">(</span><span class="n">factor</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span>
+
+        <span class="n">view_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Increase graph scale&quot;</span><span class="p">,</span> <span class="n">_increase_dpi</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="p">(</span><span class="s2">&quot;Ctrl+Shift+=&quot;</span><span class="p">))</span>
+        <span class="n">view_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;Decrease graph scale&quot;</span><span class="p">,</span> <span class="n">_decrease_dpi</span><span class="p">,</span> <span class="n">QtGui</span><span class="o">.</span><span class="n">QKeySequence</span><span class="p">(</span><span class="s2">&quot;Ctrl+Shift+-&quot;</span><span class="p">))</span>
+
+        <span class="n">export_menu</span> <span class="o">=</span> <span class="n">menubar</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;&amp;Export&quot;</span><span class="p">)</span>
+        <span class="n">export_R_menu</span> <span class="o">=</span> <span class="n">export_menu</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;&amp;Correlation Matrix&quot;</span><span class="p">)</span>
+        <span class="n">export_R_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;To CSV&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;correlation_matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">))</span>
+        <span class="n">export_R_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span>
+            <span class="s2">&quot;To clipboard&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;correlation_matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;clipboard&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">export_nodes_menu</span> <span class="o">=</span> <span class="n">export_menu</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;&amp;Nodes&quot;</span><span class="p">)</span>
+        <span class="n">export_nodes_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;To CSV&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;nodes&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">))</span>
+        <span class="n">export_nodes_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;To clipboard&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;nodes&quot;</span><span class="p">,</span> <span class="s2">&quot;clipboard&quot;</span><span class="p">))</span>
+
+        <span class="n">export_nodes_menu</span> <span class="o">=</span> <span class="n">export_menu</span><span class="o">.</span><span class="n">addMenu</span><span class="p">(</span><span class="s2">&quot;&amp;Edges&quot;</span><span class="p">)</span>
+        <span class="n">export_nodes_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;To CSV&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;edges&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">))</span>
+        <span class="n">export_nodes_menu</span><span class="o">.</span><span class="n">addAction</span><span class="p">(</span><span class="s2">&quot;To clipboard&quot;</span><span class="p">,</span> <span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">&quot;edges&quot;</span><span class="p">,</span> <span class="s2">&quot;clipboard&quot;</span><span class="p">))</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,8 +1,6 @@
-"""Top-level package for delft3dfmpy."""
-
 __author__ = """Guus Rongen"""
 __email__ = "g.w.f.rongen@tudelft.nl"
-__version__ = "0.1.0"
+__version__ = "1.0.0"
 
 if __name__ == "__main__":
 

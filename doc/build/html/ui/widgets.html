@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>widgets.py &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="io.py" href="../io.html" />
+    <link rel="prev" title="nodeedge.py" href="nodeedge.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../code.html">Code documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../core.html">core</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../ui.html">ui</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="conditional.html">conditional.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dialogs.html">dialogs.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="graph.html">graph.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="logging.html">logging.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="main.html">main.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="matrix.html">matrix.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="menus.html">menus.py</a></li>
+<li class="toctree-l3"><a class="reference internal" href="nodeedge.html">nodeedge.py</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">widgets.py</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.CheckBoxInput"><code class="docutils literal notranslate"><span class="pre">CheckBoxInput</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.ComboboxInputLine"><code class="docutils literal notranslate"><span class="pre">ComboboxInputLine</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.EnableableWidget"><code class="docutils literal notranslate"><span class="pre">EnableableWidget</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.ExtendedLineEdit"><code class="docutils literal notranslate"><span class="pre">ExtendedLineEdit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.HLayout"><code class="docutils literal notranslate"><span class="pre">HLayout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.HLine"><code class="docutils literal notranslate"><span class="pre">HLine</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.LogoSplitter"><code class="docutils literal notranslate"><span class="pre">LogoSplitter</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.ParameterInputLine"><code class="docutils literal notranslate"><span class="pre">ParameterInputLine</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.VLayout"><code class="docutils literal notranslate"><span class="pre">VLayout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matlatzinca.ui.widgets.get_width"><code class="docutils literal notranslate"><span class="pre">get_width()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../io.html">io.py</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../code.html">Code documentation</a></li>
+          <li class="breadcrumb-item"><a href="../ui.html">ui</a></li>
+      <li class="breadcrumb-item active">widgets.py</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/ui/widgets.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-matlatzinca.ui.widgets">
+<span id="widgets-py"></span><h1>widgets.py<a class="headerlink" href="#module-matlatzinca.ui.widgets" title="Permalink to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.CheckBoxInput">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">CheckBoxInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#CheckBoxInput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.CheckBoxInput" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<p>A widget that combines a label and a checkbox</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.CheckBoxInput.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#CheckBoxInput.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.CheckBoxInput.get_value" title="Permalink to this definition"></a></dt>
+<dd><p>Get value from combobox</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.CheckBoxInput.init_ui">
+<span class="sig-name descname"><span class="pre">init_ui</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spacer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#CheckBoxInput.init_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.CheckBoxInput.init_ui" title="Permalink to this definition"></a></dt>
+<dd><p>Build ui layout</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.CheckBoxInput.set_value">
+<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#CheckBoxInput.set_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.CheckBoxInput.set_value" title="Permalink to this definition"></a></dt>
+<dd><p>Set value to combobox</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ComboboxInputLine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">ComboboxInputLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">items</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spacer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ComboboxInputLine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ComboboxInputLine" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<p>A widget that combines a label and a combo box with several items</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ComboboxInputLine.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ComboboxInputLine.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ComboboxInputLine.get_value" title="Permalink to this definition"></a></dt>
+<dd><p>Get value from combobox</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ComboboxInputLine.init_ui">
+<span class="sig-name descname"><span class="pre">init_ui</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">spacer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ComboboxInputLine.init_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ComboboxInputLine.init_ui" title="Permalink to this definition"></a></dt>
+<dd><p>Build ui layout</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ComboboxInputLine.set_value">
+<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ComboboxInputLine.set_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ComboboxInputLine.set_value" title="Permalink to this definition"></a></dt>
+<dd><p>Set value to combobox</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.EnableableWidget">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">EnableableWidget</span></span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#EnableableWidget"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.EnableableWidget" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.EnableableWidget.set_enabled">
+<span class="sig-name descname"><span class="pre">set_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#EnableableWidget.set_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.EnableableWidget.set_enabled" title="Permalink to this definition"></a></dt>
+<dd><p>Enable of disable widget elements</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ExtendedLineEdit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">ExtendedLineEdit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">browsebutton</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ExtendedLineEdit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ExtendedLineEdit" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ExtendedLineEdit.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ExtendedLineEdit.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ExtendedLineEdit.get_value" title="Permalink to this definition"></a></dt>
+<dd><p>Get value from line edit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ExtendedLineEdit.init_ui">
+<span class="sig-name descname"><span class="pre">init_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ExtendedLineEdit.init_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ExtendedLineEdit.init_ui" title="Permalink to this definition"></a></dt>
+<dd><p>Build ui element</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ExtendedLineEdit.set_value">
+<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ExtendedLineEdit.set_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ExtendedLineEdit.set_value" title="Permalink to this definition"></a></dt>
+<dd><p>Set value to line edit</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.HLayout">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">HLayout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stretch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#HLayout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.HLayout" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QHBoxLayout</span></code></p>
+<p>Groups some items in a QHBoxLayout</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.HLine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">HLine</span></span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#HLine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.HLine" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QFrame</span></code></p>
+<p>Adds a horizontal line</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.LogoSplitter">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">LogoSplitter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">topwidget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottomwidget</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">toptext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottomtext</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#LogoSplitter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.LogoSplitter" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QSplitter</span></code></p>
+<p>Splitter that shows an arrow icon when it is collapsd to one side.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.LogoSplitter.handleSplitterButton">
+<span class="sig-name descname"><span class="pre">handleSplitterButton</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#LogoSplitter.handleSplitterButton"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.LogoSplitter.handleSplitterButton" title="Permalink to this definition"></a></dt>
+<dd><p>When button is clicked</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.LogoSplitter.on_moved">
+<span class="sig-name descname"><span class="pre">on_moved</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#LogoSplitter.on_moved"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.LogoSplitter.on_moved" title="Permalink to this definition"></a></dt>
+<dd><p>Method to call when splitter is moved. This method
+updates the icon, but it can be extended to update for example a canvs</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.LogoSplitter.setSizes">
+<span class="sig-name descname"><span class="pre">setSizes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#LogoSplitter.setSizes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.LogoSplitter.setSizes" title="Permalink to this definition"></a></dt>
+<dd><p>Override the default method to also check the sizes and change label and logo accordingly.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ParameterInputLine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">ParameterInputLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">label</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labelwidth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unitlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ParameterInputLine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ParameterInputLine" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QWidget</span></code></p>
+<p>A widget that combines a label, input field and unit label</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ParameterInputLine.get_value">
+<span class="sig-name descname"><span class="pre">get_value</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ParameterInputLine.get_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ParameterInputLine.get_value" title="Permalink to this definition"></a></dt>
+<dd><p>Get value from line edit</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ParameterInputLine.init_ui">
+<span class="sig-name descname"><span class="pre">init_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ParameterInputLine.init_ui"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ParameterInputLine.init_ui" title="Permalink to this definition"></a></dt>
+<dd><p>Build ui layout</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ParameterInputLine.set_enabled">
+<span class="sig-name descname"><span class="pre">set_enabled</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">enabled</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ParameterInputLine.set_enabled"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ParameterInputLine.set_enabled" title="Permalink to this definition"></a></dt>
+<dd><p>Enable of disable widget elements</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.ParameterInputLine.set_value">
+<span class="sig-name descname"><span class="pre">set_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#ParameterInputLine.set_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.ParameterInputLine.set_value" title="Permalink to this definition"></a></dt>
+<dd><p>Set value to line edit</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.VLayout">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">VLayout</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">items</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stretch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#VLayout"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.VLayout" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">QVBoxLayout</span></code></p>
+<p>Groups some items in a QVBoxLayout</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="matlatzinca.ui.widgets.get_width">
+<span class="sig-prename descclassname"><span class="pre">matlatzinca.ui.widgets.</span></span><span class="sig-name descname"><span class="pre">get_width</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/matlatzinca/ui/widgets.html#get_width"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#matlatzinca.ui.widgets.get_width" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="nodeedge.html" class="btn btn-neutral float-left" title="nodeedge.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../io.html" class="btn btn-neutral float-right" title="io.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

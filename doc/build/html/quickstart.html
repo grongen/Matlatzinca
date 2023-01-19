@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick start &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Code documentation" href="code.html" />
+    <link rel="prev" title="Welcome to Matlatzinca’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick start</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">Quick start</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quick-start">
+<h1>Quick start<a class="headerlink" href="#quick-start" title="Permalink to this heading"></a></h1>
+<p>The following guide gives an introduction to the functionalities Matlatzinca provides.</p>
+<div class="toctree-wrapper compound">
+</div>
+<p>Jump to:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#launching">Launching</a></p></li>
+<li><p><a class="reference internal" href="#new-project-loading-and-saving">New project, loading and saving</a></p></li>
+<li><p><a class="reference internal" href="#edit-a-project">Edit a project</a></p></li>
+<li><p><a class="reference internal" href="#results">Results</a></p></li>
+</ul>
+<dl id="introduction">
+<dt>Introduction</dt><dd><p>Matlatzinca is a program to schematize and quantify a dependence between different random variables using a Non-parametric Bayesian Network. The user specifies nodes and edges, that represent the random variables and their (conditional) dependence. This structure is the Bayesian Network, which is Non-parametric as the probability distributions for the random variables themselves are not specified (and do not need to be). The program outputs the correlation matrix that can be used in subsequent analyses.</p>
+<p>The program was designed for expert elicitation, meaning that experts were presented with a situation for which they need to assess the dependence between given random variables. In such applications, Matlatzinca helps the user by providing a graphical interface, and doing the (difficult) conditional correlation calculations.</p>
+</dd>
+</dl>
+<dl class="simple" id="launching">
+<dt>Launching Matlatzinca</dt><dd><p>There are two options for launching Matlatzinca</p>
+<ul class="simple">
+<li><p>Start Matlatzinca by double-clicking the executable Matlatzinca.exe.</p></li>
+<li><p>Alternatively, the module can be launched directly from the Python code. To do so, go to the site-package directory of Matlatzinca, called “Matlatzinca” (with capital M). It should contain a directory called “matlatzinca” (with lower-case m). Open a command prompt with Python environment variables (e.g., an Anaconda command prompt) and execute the following command: “python -m matlatzinca”.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple" id="new-project-loading-and-saving">
+<dt>New project, loading and saving</dt><dd><p>There are several options for opening of saving a project:</p>
+<ul class="simple">
+<li><p><strong>New project</strong>: When starting Matlatzinca, a new project is opened. By choosing the <code class="docutils literal notranslate"><span class="pre">New</span></code> option in the <code class="docutils literal notranslate"><span class="pre">File</span></code> menu, the current project is closed and an empty project is presented.</p></li>
+<li><p><strong>Load project</strong>: In the <code class="docutils literal notranslate"><span class="pre">File</span></code> menu an existing project can be loaded with the <code class="docutils literal notranslate"><span class="pre">Open</span></code> option. Previously created and saved project (see below) can be loaded with this option.</p></li>
+<li><p><strong>Save project as</strong>: Clicking <code class="docutils literal notranslate"><span class="pre">Save</span> <span class="pre">as</span></code> opens a dialog in which you can specify the location and file name for saving the project. The current project is then saved in JSON-format5 (.json).</p></li>
+<li><p><strong>Save project</strong>: When a project is already opened, in can be saved without giving a filename, by clicking the <code class="docutils literal notranslate"><span class="pre">Save</span></code> option in the menu.</p></li>
+</ul>
+</dd>
+</dl>
+<dl id="edit-a-project">
+<dt>Edit a project</dt><dd><p>The figure below shows the Matlatzinca main screen. The screen consists of three main panels.</p>
+<figure class="align-default">
+<img alt="_images/overview.png" src="_images/overview.png" />
+</figure>
+<p>A number of actions can be done to configure a project:</p>
+<ul class="simple">
+<li><p><strong>The drawing panel</strong>: The drawing panel, on the left is where you will create the Directed Acyclic Graph (DAG) representing the dependence structure of the BN. You can do this by using the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">node</span></code>, <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">edge</span></code> and <code class="docutils literal notranslate"><span class="pre">Delete</span> <span class="pre">selected</span> <span class="pre">node/edge</span></code> buttons. This DAG shows how the different variables are related to each other.</p></li>
+<li><p><strong>The input panel</strong>: The input panel, on the lower right, is used to name the random variables “Nodes” and quantify the dependence for the edges that you have drawn. You have the option to quantify the edges using two different methods: Spearman’s conditional rank correlations or non-conditional rank correlations. To help you, the software provides a range of possible values for non-conditional rank correlations. This range is based on the structure of the DAG and the magnitude of the correlations that you entered. The range will be updated as you enter values for either conditional or non-conditional rank correlations.</p></li>
+<li><p><strong>The correlation matrix panel</strong>: The correlation matrix panel, on the upper right, is where you can see the correlation between all the variables in the model. The magnitude and direction of the correlation is shown by circles that vary in size and color. The colormap can be chosen by the user. The panel also allows you to plot the conditional probabilities between two variables (button: <code class="docutils literal notranslate"><span class="pre">Plot</span> <span class="pre">conditional</span> <span class="pre">probabilities</span></code>), which shows how likely it is that one variable is above a certain value given that the other variable is above a certain value. This helps you understand how the variables are related and make it easier to quantify your model.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple" id="results">
+<dt>Exporting results</dt><dd><p>Results can be exported with the <code class="docutils literal notranslate"><span class="pre">Export</span></code> button in the menu. It allows you to export the table with nodes, table with edges, and the correlation matrix, <code class="docutils literal notranslate"><span class="pre">To</span> <span class="pre">CSV</span> <span class="pre">``or</span> <span class="pre">``To</span> <span class="pre">clipboard</span></code>. Exporting to clipboard can be used to paste the result in, for example, Excel.</p>
+</dd>
+</dl>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Matlatzinca’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="code.html" class="btn btn-neutral float-right" title="Code documentation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

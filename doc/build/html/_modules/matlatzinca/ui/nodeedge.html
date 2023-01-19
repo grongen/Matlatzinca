@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>matlatzinca.ui.nodeedge &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">matlatzinca.ui.nodeedge</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for matlatzinca.ui.nodeedge</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">matlatzinca.ui</span> <span class="kn">import</span> <span class="n">widgets</span><span class="p">,</span> <span class="n">menus</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">Qt</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span>
+
+
+<div class="viewcode-block" id="NodeEdgeWidget"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeEdgeWidget">[docs]</a><span class="k">class</span> <span class="nc">NodeEdgeWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mainwindow</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span> <span class="o">=</span> <span class="n">mainwindow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">mainwindow</span><span class="o">.</span><span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="n">mainwindow</span><span class="o">.</span><span class="n">signals</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_emit_layout_about_to_be_changed</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_emit_layout_changed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">construct_widget</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">selected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">set_selection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodeview</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span><span class="o">.</span><span class="n">currentRowChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_node_selected</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edgeview</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span><span class="o">.</span><span class="n">currentRowChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emit_edge_selected</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NodeEdgeWidget.set_selection"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeEdgeWidget.set_selection">[docs]</a>    <span class="k">def</span> <span class="nf">set_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+
+        <span class="c1"># If selection is node</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="c1"># Get the selected row</span>
+            <span class="n">row</span><span class="p">,</span> <span class="n">node</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodemodel</span><span class="o">.</span><span class="n">modellist</span><span class="p">)</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">obj</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># Get the model index matching the row</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodemodel</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># If the row is already selected, the currentRowChanged signal is not triggered, so</span>
+            <span class="c1"># emit a signal from here</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodeview</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span><span class="o">.</span><span class="n">row</span><span class="p">()</span> <span class="o">==</span> <span class="n">row</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">nodeview_row_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="c1"># self.nodeview.setFocus()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeview</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QItemSelectionModel</span><span class="o">.</span><span class="n">SelectCurrent</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edgeview</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span><span class="o">.</span><span class="n">clearSelection</span><span class="p">()</span>
+
+        <span class="c1"># If selection is edge</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">parent</span><span class="p">,</span> <span class="n">child</span> <span class="o">=</span> <span class="n">obj</span>
+            <span class="n">row</span><span class="p">,</span> <span class="n">edge</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">edge</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">edge</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">modellist</span><span class="p">)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">child</span> <span class="o">==</span> <span class="n">child</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">parent</span> <span class="o">==</span> <span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">)</span>
+            <span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="c1"># If the row is already selected, the currentRowChanged signal is not triggered, so</span>
+            <span class="c1"># emit a signal from here</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgeview</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">()</span><span class="o">.</span><span class="n">row</span><span class="p">()</span> <span class="o">==</span> <span class="n">row</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edgeview_row_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">child</span><span class="p">),</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">))</span>
+            <span class="c1"># self.edgeview.setFocus()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edgeview</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span><span class="o">.</span><span class="n">setCurrentIndex</span><span class="p">(</span>
+                <span class="n">index</span><span class="p">,</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QItemSelectionModel</span><span class="o">.</span><span class="n">SelectCurrent</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QItemSelectionModel</span><span class="o">.</span><span class="n">Rows</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nodeview</span><span class="o">.</span><span class="n">selectionModel</span><span class="p">()</span><span class="o">.</span><span class="n">clearSelection</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NodeEdgeWidget.construct_widget"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeEdgeWidget.construct_widget">[docs]</a>    <span class="k">def</span> <span class="nf">construct_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs the widget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Node view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodeview</span> <span class="o">=</span> <span class="n">NodeTableView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># self.nodeview.setStyleSheet(&quot;selection-background-color: rgb(204, 232, 255); color: rgb(0, 0, 0);&quot;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodemodel</span> <span class="o">=</span> <span class="n">NodeListModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodeview</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodemodel</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodeview</span><span class="o">.</span><span class="n">horizontalHeader</span><span class="p">()</span><span class="o">.</span><span class="n">setStretchLastSection</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Edge view</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edgeview</span> <span class="o">=</span> <span class="n">EdgeTableView</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="c1"># self.edgeview.setStyleSheet(&quot;selection-background-color: rgb(204, 232, 255); color: rgb(0, 0, 0);&quot;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span> <span class="o">=</span> <span class="n">EdgeListsModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edgeview</span><span class="o">.</span><span class="n">setModel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span><span class="p">)</span>
+        <span class="n">edgeheader</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgeview</span><span class="o">.</span><span class="n">horizontalHeader</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">columnCount</span><span class="p">()):</span>
+            <span class="n">edgeheader</span><span class="o">.</span><span class="n">setSectionResizeMode</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHeaderView</span><span class="o">.</span><span class="n">ResizeToContents</span><span class="p">)</span>
+        <span class="n">edgeheader</span><span class="o">.</span><span class="n">setSectionResizeMode</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHeaderView</span><span class="o">.</span><span class="n">Stretch</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">HLayout</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">nodeview</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgeview</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="NodeEdgeWidget.emit_node_selected"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeEdgeWidget.emit_node_selected">[docs]</a>    <span class="k">def</span> <span class="nf">emit_node_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">old</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">nodeview_row_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">new</span><span class="o">.</span><span class="n">data</span><span class="p">(),</span> <span class="n">old</span><span class="o">.</span><span class="n">data</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="NodeEdgeWidget.emit_edge_selected"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeEdgeWidget.emit_edge_selected">[docs]</a>    <span class="k">def</span> <span class="nf">emit_edge_selected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">old</span><span class="p">):</span>
+        <span class="n">newedge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">new</span><span class="o">.</span><span class="n">row</span><span class="p">()]</span>
+        <span class="n">newedge_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">newedge</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">newedge</span><span class="o">.</span><span class="n">child</span><span class="p">)</span>
+        <span class="n">oldrow</span> <span class="o">=</span> <span class="n">old</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">oldrow</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">modellist</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">oldedge_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">oldedge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">old</span><span class="o">.</span><span class="n">row</span><span class="p">()]</span>
+            <span class="n">oldedge_tuple</span> <span class="o">=</span> <span class="p">(</span><span class="n">oldedge</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">oldedge</span><span class="o">.</span><span class="n">child</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edgeview_row_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">newedge_tuple</span><span class="p">,</span> <span class="n">oldedge_tuple</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_emit_layout_about_to_be_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodemodel</span><span class="o">.</span><span class="n">layoutAboutToBeChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_emit_layout_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edgemodel</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodemodel</span><span class="o">.</span><span class="n">layoutChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="ReorderTableView"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.ReorderTableView">[docs]</a><span class="k">class</span> <span class="nc">ReorderTableView</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QTableView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;QTableView with the ability to make the model move a row with drag &amp; drop&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ReorderTableView.DropmarkerStyle"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.ReorderTableView.DropmarkerStyle">[docs]</a>    <span class="k">class</span> <span class="nc">DropmarkerStyle</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QProxyStyle</span><span class="p">):</span>
+<div class="viewcode-block" id="ReorderTableView.DropmarkerStyle.drawPrimitive"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.ReorderTableView.DropmarkerStyle.drawPrimitive">[docs]</a>        <span class="k">def</span> <span class="nf">drawPrimitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">element</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Draw a line across the entire row rather than just the column we&#39;re hovering over.</span>
+<span class="sd">            This may not always work depending on global style - for instance I think it won&#39;t</span>
+<span class="sd">            work on OSX.&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">element</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">PE_IndicatorItemViewItemDrop</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">option</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">isNull</span><span class="p">():</span>
+                <span class="n">option_new</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QStyleOption</span><span class="p">(</span><span class="n">option</span><span class="p">)</span>
+                <span class="n">option_new</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">setLeft</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">widget</span><span class="p">:</span>
+                    <span class="n">option_new</span><span class="o">.</span><span class="n">rect</span><span class="o">.</span><span class="n">setRight</span><span class="p">(</span><span class="n">widget</span><span class="o">.</span><span class="n">width</span><span class="p">())</span>
+                <span class="n">option</span> <span class="o">=</span> <span class="n">option_new</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">drawPrimitive</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">painter</span><span class="p">,</span> <span class="n">widget</span><span class="p">)</span></div></div>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSelectionBehavior</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SelectRows</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSelectionMode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">SingleSelection</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDragDropMode</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">InternalMove</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setDragDropOverwriteMode</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyle</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">DropmarkerStyle</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">mainwindow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">signals</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setShowGrid</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setAlternatingRowColors</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setStyleSheet</span><span class="p">(</span><span class="s2">&quot;QTableView{border: 1px solid &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">bordercolor</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ReorderTableView.dropEvent"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.ReorderTableView.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">source</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span> <span class="ow">or</span> <span class="p">(</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">dropAction</span><span class="p">()</span> <span class="o">!=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">MoveAction</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragDropMode</span><span class="p">()</span> <span class="o">!=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QAbstractItemView</span><span class="o">.</span><span class="n">InternalMove</span>
+        <span class="p">):</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dropEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+        <span class="n">selection</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">selectedIndexes</span><span class="p">()</span>
+        <span class="n">from_index</span> <span class="o">=</span> <span class="n">selection</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">row</span><span class="p">()</span> <span class="k">if</span> <span class="n">selection</span> <span class="k">else</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">to_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">indexAt</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">pos</span><span class="p">())</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">from_index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">to_index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">()</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+            <span class="ow">and</span> <span class="n">from_index</span> <span class="o">!=</span> <span class="n">to_index</span>
+        <span class="p">):</span>
+
+            <span class="k">return</span> <span class="n">from_index</span><span class="p">,</span> <span class="n">to_index</span></div></div>
+
+
+<div class="viewcode-block" id="NodeTableView"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeTableView">[docs]</a><span class="k">class</span> <span class="nc">NodeTableView</span><span class="p">(</span><span class="n">ReorderTableView</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NodeTableView.contextMenuEvent"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeTableView.contextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the context menu for the expert widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">menus</span><span class="o">.</span><span class="n">NodeViewContextMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeTableView.delete_node"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeTableView.delete_node">[docs]</a>    <span class="k">def</span> <span class="nf">delete_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">nodename</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_about_to_be_removed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">nodename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodeTableView.dropEvent"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeTableView.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dropEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">from_index</span><span class="p">,</span> <span class="n">to_index</span> <span class="o">=</span> <span class="n">res</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_order_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">from_index</span><span class="p">,</span> <span class="n">to_index</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="EdgeTableView"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.EdgeTableView">[docs]</a><span class="k">class</span> <span class="nc">EdgeTableView</span><span class="p">(</span><span class="n">ReorderTableView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;QTableView with the ability to make the model move a row with drag &amp; drop&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">signals</span>
+
+<div class="viewcode-block" id="EdgeTableView.contextMenuEvent"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.EdgeTableView.contextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the context menu for the expert widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">menus</span><span class="o">.</span><span class="n">EdgeViewContextMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EdgeTableView.dropEvent"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.EdgeTableView.dropEvent">[docs]</a>    <span class="k">def</span> <span class="nf">dropEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">dropEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">from_index</span><span class="p">,</span> <span class="n">to_index</span> <span class="o">=</span> <span class="n">res</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">parent_order_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">from_index</span><span class="p">,</span> <span class="n">to_index</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="strformat"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.strformat">[docs]</a><span class="k">def</span> <span class="nf">strformat</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    String formatter</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    item : str or int or float</span>
+<span class="sd">        Item to be converted to formatted string</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    str</span>
+<span class="sd">        Formatted string</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">item</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;</span><span class="si">{:.3g}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;nan&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ListsModel"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.ListsModel">[docs]</a><span class="k">class</span> <span class="nc">ListsModel</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QAbstractTableModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to populate a table view with a pandas dataframe</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">modellist</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+        <span class="n">QtCore</span><span class="o">.</span><span class="n">QAbstractTableModel</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">modellist</span> <span class="o">=</span> <span class="n">modellist</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="n">keys</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">labels</span> <span class="o">=</span> <span class="n">labels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">leftalign</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># Check label dimensions</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Requires an equal number of keys (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">)</span><span class="si">}</span><span class="s2">) and labels (</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">labels</span><span class="p">)</span><span class="si">}</span><span class="s2">).&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ListsModel.rowCount"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.ListsModel.rowCount">[docs]</a>    <span class="k">def</span> <span class="nf">rowCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns number of rows in table.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ListsModel.columnCount"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.ListsModel.columnCount">[docs]</a>    <span class="k">def</span> <span class="nf">columnCount</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns number of columns in table.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ListsModel.data"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.ListsModel.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to set the data to a cell. Sets value, alignment and color</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : int</span>
+<span class="sd">            Index object with row and column</span>
+<span class="sd">        role : Qt.DisplayRole, optional</span>
+<span class="sd">            Property of data to display, by default QtCore.Qt.DisplayRole</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        QtCore.QVariant</span>
+<span class="sd">            Property of data displayed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Get number from lists</span>
+        <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
+            <span class="c1"># Get row</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+            <span class="n">col</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()</span>
+
+            <span class="c1"># If within length of list</span>
+            <span class="k">if</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">):</span>
+                <span class="c1"># Get item</span>
+                <span class="n">item</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+                <span class="c1"># Return directly if string</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">item</span>
+                <span class="c1"># Else convert to string</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">strformat</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+        <span class="c1"># Alignment</span>
+        <span class="k">elif</span> <span class="n">role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">TextAlignmentRole</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">leftalign</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QVariant</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignLeft</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignVCenter</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QVariant</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignHCenter</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignVCenter</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ListsModel.headerData"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.ListsModel.headerData">[docs]</a>    <span class="k">def</span> <span class="nf">headerData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rowcol</span><span class="p">,</span> <span class="n">orientation</span><span class="p">,</span> <span class="n">role</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to get header (index and columns) data</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Show column labels</span>
+        <span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span> <span class="ow">and</span> <span class="n">role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">labels</span><span class="p">[</span><span class="n">rowcol</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="n">orientation</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Vertical</span> <span class="ow">and</span> <span class="n">role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">rowcol</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NodeListModel"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeListModel">[docs]</a><span class="k">class</span> <span class="nc">NodeListModel</span><span class="p">(</span><span class="n">ListsModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to populate a table view with several lists related to the items</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">mainwindow</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parentwidget : Table widget</span>
+<span class="sd">            Widget of which this table model is part.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span> <span class="o">=</span> <span class="n">mainwindow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="n">mainwindow</span><span class="o">.</span><span class="n">signals</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">modellist</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Nodes</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">editable</span> <span class="o">=</span> <span class="p">[</span><span class="kc">True</span><span class="p">]</span>
+
+<div class="viewcode-block" id="NodeListModel.setData"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeListModel.setData">[docs]</a>    <span class="k">def</span> <span class="nf">setData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">EditRole</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to set data to cell. Changes the value in the list or array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">col</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+
+        <span class="n">oldvalue</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">row</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">oldvalue</span> <span class="o">==</span> <span class="n">value</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">name_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">oldvalue</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="NodeListModel.flags"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeListModel.flags">[docs]</a>    <span class="k">def</span> <span class="nf">flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemFlags</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns flags (properties) for a certain cell, based on the index</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : ModelIndex</span>
+<span class="sd">            index of the cell</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        flags</span>
+<span class="sd">            Properties of the cell</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()</span>
+
+        <span class="n">fl</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">NoItemFlags</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="c1"># pass</span>
+            <span class="n">fl</span> <span class="o">|=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsDropEnabled</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fl</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsSelectable</span>
+            <span class="n">fl</span> <span class="o">|=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsEnabled</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsDragEnabled</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">editable</span><span class="p">[</span><span class="n">col</span><span class="p">]:</span>
+                <span class="n">fl</span> <span class="o">|=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsEditable</span>
+        <span class="k">return</span> <span class="n">fl</span></div>
+
+<div class="viewcode-block" id="NodeListModel.supportedDropActions"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.NodeListModel.supportedDropActions">[docs]</a>    <span class="k">def</span> <span class="nf">supportedDropActions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">MoveAction</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CopyAction</span></div></div>
+
+
+<div class="viewcode-block" id="EdgeListsModel"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.EdgeListsModel">[docs]</a><span class="k">class</span> <span class="nc">EdgeListsModel</span><span class="p">(</span><span class="n">ListsModel</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to populate a table view with several lists related to the items</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project</span><span class="p">,</span> <span class="n">mainwindow</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        parentwidget : Table widget</span>
+<span class="sd">            Widget of which this table model is part.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span> <span class="o">=</span> <span class="n">mainwindow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="n">mainwindow</span><span class="o">.</span><span class="n">signals</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">modellist</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">project</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">edgelist</span><span class="p">,</span>
+            <span class="n">labels</span><span class="o">=</span><span class="p">[</span>
+                <span class="s2">&quot;Edge&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Conditional</span><span class="se">\n</span><span class="s2">rank corr.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Non-conditional</span><span class="se">\n</span><span class="s2">rank corr.&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Range non-cond.</span><span class="se">\n</span><span class="s2">rank corr.&quot;</span><span class="p">,</span>
+            <span class="p">],</span>
+            <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;direction_string&quot;</span><span class="p">,</span> <span class="s2">&quot;cond_rank_corr&quot;</span><span class="p">,</span> <span class="s2">&quot;rank_corr&quot;</span><span class="p">,</span> <span class="s2">&quot;rank_corr_range&quot;</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">editable</span> <span class="o">=</span> <span class="p">[</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">]</span>
+
+<div class="viewcode-block" id="EdgeListsModel.setData"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.EdgeListsModel.setData">[docs]</a>    <span class="k">def</span> <span class="nf">setData</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">Qt</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">EditRole</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to set data to cell. Changes the value in the list or array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="n">col</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+
+        <span class="c1"># If empty value is given</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;cond_rank_corr&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">correlation_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">child</span><span class="p">,</span> <span class="n">value</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rank_corr&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">observed_correlation_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">child</span><span class="p">,</span> <span class="n">value</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="EdgeListsModel.data"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.EdgeListsModel.data">[docs]</a>    <span class="k">def</span> <span class="nf">data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">role</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">):</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">data</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">role</span><span class="p">)</span>
+
+        <span class="c1"># Get number from lists</span>
+        <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">DisplayRole</span><span class="p">:</span>
+            <span class="n">col</span><span class="p">,</span> <span class="n">row</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">(),</span> <span class="n">index</span><span class="o">.</span><span class="n">row</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;cond_rank_corr&quot;</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">cond_rstring</span> <span class="o">+</span> <span class="s2">&quot; = &quot;</span> <span class="o">+</span> <span class="n">result</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;rank_corr&quot;</span><span class="p">:</span>
+                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">modellist</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">uncond_rstring</span> <span class="o">+</span> <span class="s2">&quot; = &quot;</span> <span class="o">+</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="EdgeListsModel.flags"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.EdgeListsModel.flags">[docs]</a>    <span class="k">def</span> <span class="nf">flags</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemFlags</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns flags (properties) for a certain cell, based on the index</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index : ModelIndex</span>
+<span class="sd">            index of the cell</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        flags</span>
+<span class="sd">            Properties of the cell</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">col</span> <span class="o">=</span> <span class="n">index</span><span class="o">.</span><span class="n">column</span><span class="p">()</span>
+
+        <span class="n">fl</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">NoItemFlags</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">index</span><span class="o">.</span><span class="n">isValid</span><span class="p">():</span>
+            <span class="n">fl</span> <span class="o">|=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsDropEnabled</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fl</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsSelectable</span>
+            <span class="n">fl</span> <span class="o">|=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsEnabled</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsDragEnabled</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">editable</span><span class="p">[</span><span class="n">col</span><span class="p">]:</span>
+                <span class="n">fl</span> <span class="o">|=</span> <span class="n">Qt</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">ItemIsEditable</span>
+        <span class="k">return</span> <span class="n">fl</span></div>
+
+<div class="viewcode-block" id="EdgeListsModel.supportedDropActions"><a class="viewcode-back" href="../../../ui/nodeedge.html#matlatzinca.ui.nodeedge.EdgeListsModel.supportedDropActions">[docs]</a>    <span class="k">def</span> <span class="nf">supportedDropActions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">MoveAction</span> <span class="o">|</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">CopyAction</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

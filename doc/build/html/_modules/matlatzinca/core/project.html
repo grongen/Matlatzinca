@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>matlatzinca.core.project &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">matlatzinca.core.project</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for matlatzinca.core.project</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.core.bn</span> <span class="kn">import</span> <span class="n">BayesianNetwork</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.io</span> <span class="kn">import</span> <span class="n">get_table_text</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.ui.dialogs</span> <span class="kn">import</span> <span class="n">NotificationDialog</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtWidgets</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Project"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project">[docs]</a><span class="k">class</span> <span class="nc">Project</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mainwindow</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span> <span class="o">=</span> <span class="n">mainwindow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span> <span class="o">=</span> <span class="n">BayesianNetwork</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">signals</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_coordinate_selected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_about_to_be_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_nodes_selected</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">add_edge</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_about_to_be_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_about_to_be_reversed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reverse_edge</span><span class="p">)</span>
+
+        <span class="c1"># self.signals.delete_coordinate_selected.connect(self.add_node)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">observed_correlation_about_to_change</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_observed_correlation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">correlation_about_to_change</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_edge_correlation</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">name_about_to_change</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_node_name</span><span class="p">)</span>
+
+        <span class="c1"># self.signals.sampling_order_about_to_change.connect(self.change_sampling_order)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_order_about_to_change</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_node_order</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">parent_order_about_to_change</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_parent_order</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Project.update_bn"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.update_bn">[docs]</a>    <span class="k">def</span> <span class="nf">update_bn</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Updates the BN model by calculating the correlation matrix, correlation bounds, and edges&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">R</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Calculating correlation matrix and bounds.&quot;</span><span class="p">)</span>
+            <span class="c1"># self.bn.check_sampling_order()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">calculate_correlation_matrix</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">calculate_correlation_bounds</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">create_edge_overview</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Project.add_node"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.add_node">[docs]</a>    <span class="k">def</span> <span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">],</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add node at specific coordinate&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">crd</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="c1"># Add node to BN</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">_get_unused_name</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">add_node</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="p">[],</span> <span class="n">rank_corrs</span><span class="o">=</span><span class="p">[])</span>
+        <span class="c1"># Add coordinates to Node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_bn</span><span class="p">()</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Node &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; added.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="c1"># Get the node and add coordinates</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">_get_node_by_name</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">crd</span>
+
+        <span class="c1"># Emit the signal that will update the plots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_added</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">crd</span><span class="p">,</span> <span class="n">node</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.remove_node"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove node by name&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Node &quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">&quot; removed.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_bn</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_removed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Project.remove_edge"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.remove_edge">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Remove edge by parent and child name&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">remove_edge</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Edge from &quot;</span><span class="si">{</span><span class="n">parent</span><span class="si">}</span><span class="s1">&quot; to &quot;</span><span class="si">{</span><span class="n">child</span><span class="si">}</span><span class="s1">&quot; removed.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_bn</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_removed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Project.add_edge"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">edge</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="kc">None</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Add edge from parent and child string&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">edge</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="n">succes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="o">*</span><span class="n">edge</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">succes</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Edge from &quot;</span><span class="si">{</span><span class="n">edge</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot; to &quot;</span><span class="si">{</span><span class="n">edge</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s1">&quot; added.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_bn</span><span class="p">()</span>
+            <span class="c1"># Emit the signal that will update the plots</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_added</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="o">*</span><span class="n">edge</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">NotificationDialog</span><span class="p">(</span><span class="s2">&quot;Edge was not added, as the BN would no longer be a DAG.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Project.reverse_edge"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.reverse_edge">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Reverse an existing edge (and recalculate conditional rank correlations)&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="n">succes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">reverse_edge</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">succes</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Edge from &quot;</span><span class="si">{</span><span class="n">parent</span><span class="si">}</span><span class="s1">&quot; to &quot;</span><span class="si">{</span><span class="n">child</span><span class="si">}</span><span class="s1">&quot; reversed.&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update_bn</span><span class="p">()</span>
+            <span class="c1"># Emit the signal that will update the plots</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_reversed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">NotificationDialog</span><span class="p">(</span><span class="s2">&quot;Edge was not reversed, as the BN would no longer be a DAG.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Project.change_observed_correlation"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.change_observed_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">change_observed_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">corr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Change (non-conditional) correlation coefficient&quot;&quot;&quot;</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">_get_node_by_name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="n">iparent</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_index</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">oldvalue</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">iparent</span><span class="p">]</span><span class="o">.</span><span class="n">rank_corr</span>
+
+        <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">iparent</span><span class="p">]</span><span class="o">.</span><span class="n">rank_corr</span> <span class="o">=</span> <span class="n">corr</span>
+        <span class="n">corr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">corr</span><span class="p">)</span>
+
+        <span class="c1"># Check if the correlation is within bounds</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">iparent</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">corr</span> <span class="o">&lt;</span> <span class="n">edge</span><span class="o">.</span><span class="n">rank_corr_bounds</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">corr</span> <span class="o">&gt;</span> <span class="n">edge</span><span class="o">.</span><span class="n">rank_corr_bounds</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">iparent</span><span class="p">]</span><span class="o">.</span><span class="n">rank_corr</span> <span class="o">=</span> <span class="n">oldvalue</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Choose a value in between </span><span class="si">{:.4g}</span><span class="s2"> and </span><span class="si">{:.4g}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">edge</span><span class="o">.</span><span class="n">rank_corr_bounds</span><span class="p">))</span>
+
+        <span class="c1"># Calculate the conditional correlation from the observed correlation</span>
+        <span class="n">cond_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">calculate_conditional_correlation</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="n">corr</span><span class="p">)</span>
+
+        <span class="c1"># Change the conditional correlation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_edge_correlation</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">,</span> <span class="n">corr</span><span class="o">=</span><span class="n">cond_corr</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.change_edge_correlation"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.change_edge_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">change_edge_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">corr</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Change the edge correlation&quot;&quot;&quot;</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">_get_node_by_name</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+        <span class="n">iparent</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">parent_index</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">iparent</span><span class="p">]</span><span class="o">.</span><span class="n">cond_rank_corr</span> <span class="o">=</span> <span class="n">corr</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Conditional edge (&quot;</span><span class="si">{</span><span class="n">parent</span><span class="si">}</span><span class="s1">&quot; to &quot;</span><span class="si">{</span><span class="n">child</span><span class="si">}</span><span class="s1">&quot;) correlation changed to </span><span class="si">{</span><span class="n">corr</span><span class="si">}</span><span class="s1">.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_bn</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">correlation_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Project.change_node_name"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.change_node_name">[docs]</a>    <span class="k">def</span> <span class="nf">change_node_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">oldname</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">newname</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Change a node name&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">newname</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+            <span class="c1"># raise ValueError(&quot;Name cannot be empty&quot;)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">change_node_name</span><span class="p">(</span><span class="n">oldname</span><span class="p">,</span> <span class="n">newname</span><span class="p">)</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Node &quot;</span><span class="si">{</span><span class="n">oldname</span><span class="si">}</span><span class="s1">&quot; was renamed to &quot;</span><span class="si">{</span><span class="n">newname</span><span class="si">}</span><span class="s1">&quot;.&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">name_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="c1"># self.bn.create_edge_overview()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Project.change_node_order"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.change_node_order">[docs]</a>    <span class="k">def</span> <span class="nf">change_node_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Change the node order&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="c1"># Change the node order</span>
+        <span class="n">current_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">_node_names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">target_pos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">source_pos</span><span class="p">))</span>
+        <span class="n">requested_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">_node_names</span>
+
+        <span class="c1"># Reorder the nodes</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Node order changed to to (</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">requested_order</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_bn</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_order_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span></div>
+
+    <span class="c1"># def change_sampling_order(self, source_pos: int, target_pos: int) -&gt; None:</span>
+
+
+    <span class="c1">#     self.signals.lists_about_to_change.emit()</span>
+
+    <span class="c1">#     # Change the node order</span>
+    <span class="c1">#     self.bn.nodes.insert(target_pos, self.bn.nodes.pop(source_pos))</span>
+    <span class="c1">#     requested_order = self.bn._node_names</span>
+
+    <span class="c1">#     # Reorder the nodes based on the sampling order</span>
+    <span class="c1">#     self.bn.check_sampling_order()</span>
+    <span class="c1">#     valid_order = self.bn._node_names</span>
+
+    <span class="c1">#     logger.info(f&quot;Sampling order changed to to ({&#39;, &#39;.join(valid_order)})&quot;)</span>
+
+    <span class="c1">#     self.update_bn()</span>
+
+    <span class="c1">#     self.signals.sampling_order_changed.emit()</span>
+
+    <span class="c1">#     self.signals.lists_changed.emit()</span>
+
+    <span class="c1">#     if requested_order != valid_order:</span>
+    <span class="c1">#         NotificationDialog(</span>
+    <span class="c1">#             f&quot;The given order ({&#39;, &#39;.join(requested_order)}) is not valid sampling order. Therefore, the order is changed to ({&#39;, &#39;.join(valid_order)})&quot;</span>
+    <span class="c1">#         )</span>
+
+<div class="viewcode-block" id="Project.change_parent_order"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.change_parent_order">[docs]</a>    <span class="k">def</span> <span class="nf">change_parent_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">source_pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Change order of parents, as a result of reordering the edges&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="c1"># Get edge from source position</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">edgelist</span><span class="p">[</span><span class="n">source_pos</span><span class="p">]</span>
+        <span class="c1"># Update order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">change_parent_order</span><span class="p">(</span><span class="n">source_pos</span><span class="p">,</span> <span class="n">target_pos</span><span class="p">)</span>
+        <span class="c1"># Update BN with correlations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_bn</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">parent_order_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="c1"># Select the new row with the edge position</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">selected</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">child</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Project.new"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.new">[docs]</a>    <span class="k">def</span> <span class="nf">new</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Empty the project&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_about_to_be_removed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.open"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.open">[docs]</a>    <span class="k">def</span> <span class="nf">open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">fname</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method that loads project file and builds gui</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_project_file</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">fname</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="c1"># Clear current project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">new</span><span class="p">()</span>
+
+        <span class="c1"># Open project</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">setCursorWait</span><span class="p">()</span>
+
+        <span class="c1"># Load from file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_about_to_change</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="n">loaded_bn</span> <span class="o">=</span> <span class="n">BayesianNetwork</span><span class="o">.</span><span class="n">parse_file</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">loaded_bn</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_bn</span><span class="p">()</span>
+
+        <span class="c1"># Add nodes to UI</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_added</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">node</span><span class="p">)</span>
+
+        <span class="c1"># Add edged to UI</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_added</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">child</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">lists_changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+        <span class="c1"># save current dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">appsettings</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="s2">&quot;currentdir&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">parent</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">update_projectname</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">setCursorNormal</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Project.save_as"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.save_as">[docs]</a>    <span class="k">def</span> <span class="nf">save_as</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Asks the user for the file name to save the project to.</span>
+<span class="sd">        If the file name is passed, the user is not asked the file</span>
+<span class="sd">        and the project is saved directly.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        fname : str, optional</span>
+<span class="sd">            File name, by default None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># if fname is None:</span>
+        <span class="c1"># Set open file dialog settings</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">Options</span><span class="p">()</span>
+        <span class="n">options</span> <span class="o">|=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">DontUseNativeDialog</span>
+        <span class="n">options</span> <span class="o">|=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">DontConfirmOverwrite</span>
+
+        <span class="c1"># Set current dir</span>
+        <span class="n">currentdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">appsettings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s2">&quot;currentdir&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+        <span class="c1"># Open dialog to select file</span>
+        <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="p">,</span> <span class="s2">&quot;Matlatzinca - Save project&quot;</span><span class="p">,</span> <span class="n">currentdir</span><span class="p">,</span> <span class="s2">&quot;JSON (*.json)&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">fname</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Add extension if not given in file</span>
+        <span class="k">for</span> <span class="n">end</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;.json&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">ext</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">end</span><span class="p">):</span>
+                <span class="n">fname</span> <span class="o">+=</span> <span class="n">end</span>
+
+        <span class="c1"># Convert to path</span>
+        <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">fname</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="n">reply</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="p">,</span>
+                <span class="s2">&quot;Matlatzinca - Save project&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fname</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> already exists.</span><span class="se">\n</span><span class="s2">Do you want to overwrite it?&quot;</span><span class="p">,</span>
+                <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">Yes</span> <span class="o">|</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">reply</span> <span class="o">==</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QMessageBox</span><span class="o">.</span><span class="n">No</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Save files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">update_projectname</span><span class="p">(</span><span class="n">fname</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.save"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.save">[docs]</a>    <span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save current project, checks if the file name is already known.</span>
+<span class="sd">        If not, the save as function is called and the user is asked to</span>
+<span class="sd">        pick a file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># If no current project, save as...</span>
+        <span class="n">currentproject</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">appsettings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s2">&quot;currentproject&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">currentproject</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_project_as</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Get current directory</span>
+            <span class="n">currentdir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">appsettings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s2">&quot;currentdir&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">))</span>
+
+            <span class="c1"># Else, save files directly</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="n">currentdir</span> <span class="o">/</span> <span class="n">currentproject</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_window_modified</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Project.get_project_file"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.get_project_file">[docs]</a>    <span class="k">def</span> <span class="nf">get_project_file</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Opens a dialog to select a project file to open.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Set open file dialog settings</span>
+        <span class="n">options</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">Options</span><span class="p">()</span>
+        <span class="n">options</span> <span class="o">|=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">DontUseNativeDialog</span>
+
+        <span class="c1"># Set current dir</span>
+        <span class="n">currentdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">appsettings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s2">&quot;currentdir&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+        <span class="c1"># Open dialog to select file</span>
+        <span class="n">fname</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getOpenFileName</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="p">,</span>
+            <span class="s2">&quot;Matlatzinca - Open project&quot;</span><span class="p">,</span>
+            <span class="n">currentdir</span><span class="p">,</span>
+            <span class="s2">&quot;JSON (*.json)&quot;</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">fname</span></div>
+
+<div class="viewcode-block" id="Project.export"><a class="viewcode-back" href="../../../core/project.html#matlatzinca.core.project.Project.export">[docs]</a>    <span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">what</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">how</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Exports correlation matrix or tables to csv or clipboard</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            what (str): correlation_matrix, nodes, or edges</span>
+<span class="sd">            how (str): csv or clipboard</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">what</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;correlation_matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">,</span> <span class="s2">&quot;edges&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Choose one of &quot;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;correlation_matrix&quot;</span><span class="p">,</span> <span class="s2">&quot;nodes&quot;</span><span class="p">,</span> <span class="s2">&quot;edges&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">&quot; for &quot;what&quot;&#39;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">how</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;csv&quot;</span><span class="p">,</span> <span class="s2">&quot;clipboard&quot;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Choose one of &quot;</span><span class="si">{</span><span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;csv&quot;</span> <span class="p">,</span> <span class="s2">&quot;clipboard&quot;</span><span class="p">])</span><span class="si">}</span><span class="s1">&quot; for &quot;how&quot;&#39;</span><span class="p">)</span>
+
+        <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span> <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;clipboard&quot;</span> <span class="k">else</span> <span class="s2">&quot;,&quot;</span>
+
+        <span class="c1"># Gather data</span>
+        <span class="k">if</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;correlation_matrix&quot;</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">_node_names</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">R</span><span class="p">[:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="n">name</span><span class="p">]</span> <span class="o">+</span> <span class="n">row</span> <span class="k">for</span> <span class="n">row</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn</span><span class="o">.</span><span class="n">_node_names</span><span class="p">)]</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">row</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data</span><span class="p">])</span>
+
+        <span class="k">elif</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;nodes&quot;</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">get_table_text</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">nodes_edges_widget</span><span class="o">.</span><span class="n">nodemodel</span><span class="p">,</span> <span class="n">newline_replace</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">what</span> <span class="o">==</span> <span class="s2">&quot;edges&quot;</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">get_table_text</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">nodes_edges_widget</span><span class="o">.</span><span class="n">edgemodel</span><span class="p">,</span> <span class="n">newline_replace</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+
+        <span class="c1"># Export data</span>
+        <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;csv&quot;</span><span class="p">:</span>
+            <span class="c1"># Set open file dialog settings</span>
+            <span class="n">options</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">Options</span><span class="p">()</span> <span class="o">|</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">DontUseNativeDialog</span>
+
+            <span class="c1"># Set current dir</span>
+            <span class="n">currentdir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="o">.</span><span class="n">appsettings</span><span class="o">.</span><span class="n">value</span><span class="p">(</span><span class="s2">&quot;currentdir&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+
+            <span class="c1"># Open dialog to select file</span>
+            <span class="n">fname</span><span class="p">,</span> <span class="n">ext</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFileDialog</span><span class="o">.</span><span class="n">getSaveFileName</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span><span class="p">,</span> <span class="s2">&quot;BN Drawing - Save data&quot;</span><span class="p">,</span> <span class="n">currentdir</span><span class="p">,</span> <span class="s2">&quot;CSV (*.csv)&quot;</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">fname</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="s2">&quot;.csv&quot;</span> <span class="ow">in</span> <span class="n">ext</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">fname</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.csv&quot;</span><span class="p">):</span>
+                <span class="n">fname</span> <span class="o">+=</span> <span class="s2">&quot;.csv&quot;</span>
+
+            <span class="c1"># Convert to path</span>
+            <span class="n">fname</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+            <span class="k">with</span> <span class="n">fname</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">how</span> <span class="o">==</span> <span class="s2">&quot;clipboard&quot;</span><span class="p">:</span>
+            <span class="n">QtWidgets</span><span class="o">.</span><span class="n">qApp</span><span class="o">.</span><span class="n">clipboard</span><span class="p">()</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

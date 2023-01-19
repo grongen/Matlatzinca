@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>matlatzinca.ui.graph &mdash; Matlatzinca 1.0 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Matlatzinca
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code.html">Code documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Matlatzinca</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">matlatzinca.ui.graph</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for matlatzinca.ui.graph</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.core.models</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.core.threads</span> <span class="kn">import</span> <span class="n">Worker</span>
+<span class="kn">from</span> <span class="nn">matlatzinca.ui</span> <span class="kn">import</span> <span class="n">menus</span><span class="p">,</span> <span class="n">widgets</span>
+<span class="kn">from</span> <span class="nn">matplotlib.backends.backend_qt5agg</span> <span class="kn">import</span> <span class="n">FigureCanvasQTAgg</span><span class="p">,</span> <span class="n">NavigationToolbar2QT</span>
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Circle</span><span class="p">,</span> <span class="n">FancyArrowPatch</span>
+<span class="kn">from</span> <span class="nn">PyQt5</span> <span class="kn">import</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtGui</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="GraphWidget"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget">[docs]</a><span class="k">class</span> <span class="nc">GraphWidget</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mainwindow</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructor</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mainwindow</span> <span class="o">=</span> <span class="n">mainwindow</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span> <span class="o">=</span> <span class="n">mainwindow</span><span class="o">.</span><span class="n">signals</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">project</span> <span class="o">=</span> <span class="n">mainwindow</span><span class="o">.</span><span class="n">project</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">construct_widget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connect_signals</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_edge_clicked</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_edge_thread</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_node_thread</span><span class="p">()</span>
+        <span class="c1"># self.init_delete_thread()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">name_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">change_node_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_added</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_added</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_removed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_edgepatch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_reversed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">remove_edgepatch</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_reversed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">plot_edge</span><span class="p">(</span><span class="n">child</span><span class="p">,</span> <span class="n">parent</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_about_to_be_added</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_add_node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_about_to_be_added</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_add_edge</span><span class="p">)</span>
+        <span class="c1"># self.signals.on_click_delete_about_to_happen.connect(self.start_delete_node_edge)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_graph_message</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="o">.</span><span class="n">set_text</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_graph_message</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">nodeview_row_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">select_node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edgeview_row_changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">select_edge</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">stop_running_click_threads</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">stop_threads</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_radius</span> <span class="o">=</span> <span class="mf">0.05</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">picked</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="GraphWidget.construct_widget"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.construct_widget">[docs]</a>    <span class="k">def</span> <span class="nf">construct_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Constructs the widget.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Create figure</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">constrained_layout</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.002</span><span class="p">,</span> <span class="mf">0.002</span><span class="p">,</span> <span class="mf">0.998</span><span class="p">,</span> <span class="mf">0.998</span><span class="p">])</span>
+
+        <span class="c1"># Set background color</span>
+        <span class="n">bgcolor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">palette</span><span class="p">()</span><span class="o">.</span><span class="n">color</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">backgroundRole</span><span class="p">())</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">patch</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="n">bgcolor</span><span class="p">)</span>
+        <span class="c1"># self.figure.tight_layout()</span>
+
+        <span class="c1"># self.ax.spines[&quot;right&quot;].set_visible(False)</span>
+        <span class="c1"># self.ax.spines[&quot;top&quot;].set_visible(False)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">aspect</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">xticks</span><span class="o">=</span><span class="p">[],</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">axis</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.98</span><span class="p">,</span> <span class="n">s</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;top&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Add canvas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span> <span class="o">=</span> <span class="n">FigureCanvasQTAgg</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span> <span class="o">=</span> <span class="n">NavigationToolbar2QT</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Buttonbar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_node_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Add node&quot;</span><span class="p">,</span> <span class="n">clicked</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_about_to_be_added</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span><span class="s2">&quot;Add edge&quot;</span><span class="p">,</span> <span class="n">clicked</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_about_to_be_added</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delete_button</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">(</span>
+            <span class="s2">&quot;Delete selected node/edge&quot;</span><span class="p">,</span> <span class="n">clicked</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delete_selected_object</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttonbar</span> <span class="o">=</span> <span class="n">widgets</span><span class="o">.</span><span class="n">HLayout</span><span class="p">(</span>
+            <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">add_node_button</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_edge_button</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">delete_button</span><span class="p">,</span> <span class="s2">&quot;stretch&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setLayout</span><span class="p">(</span><span class="n">widgets</span><span class="o">.</span><span class="n">VLayout</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">buttonbar</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">toolbar</span><span class="p">]))</span></div>
+
+<div class="viewcode-block" id="GraphWidget.connect_signals"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.connect_signals">[docs]</a>    <span class="k">def</span> <span class="nf">connect_signals</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;pick_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onpick</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;button_release_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onrelease</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;button_press_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">onpress</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphWidget.disconnect_all"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.disconnect_all">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.deselect_all"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.deselect_all">[docs]</a>    <span class="k">def</span> <span class="nf">deselect_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">deselect</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">deselect</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.onpick"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.onpick">[docs]</a>    <span class="k">def</span> <span class="nf">onpick</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">deselect_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disconnect_all</span><span class="p">()</span>
+
+        <span class="c1"># We only want a single pick per click</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">picked</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># On right click</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">mouseevent</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_edge_clicked</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">picked</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">artist</span><span class="p">,</span> <span class="n">Circle</span><span class="p">):</span>
+            <span class="c1"># Get circlepatch</span>
+            <span class="k">for</span> <span class="n">nodepatch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">nodepatch</span><span class="o">.</span><span class="n">circle</span> <span class="o">==</span> <span class="n">event</span><span class="o">.</span><span class="n">artist</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">selected</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">nodepatch</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                    <span class="c1"># Keep track of the last clicked nodes, needed for drawing edges</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodepatch</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+                    <span class="c1"># If left click, connect for draging the node to a new position</span>
+                    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">mouseevent</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">nodepatch</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+                        <span class="c1"># The event-handling for the node is connected *after* the node is clicked.</span>
+                        <span class="c1"># Therefore, the original click result needs to be emulated.</span>
+                        <span class="n">nodepatch</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="n">nodepatch</span><span class="o">.</span><span class="n">circle</span><span class="o">.</span><span class="n">center</span><span class="p">,</span> <span class="p">(</span><span class="n">nodepatch</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">nodepatch</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">artist</span><span class="p">,</span> <span class="n">FancyArrowPatch</span><span class="p">):</span>
+            <span class="c1"># Get circlepatch</span>
+            <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">arrow</span> <span class="o">==</span> <span class="n">event</span><span class="o">.</span><span class="n">artist</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">selected</span><span class="o">.</span><span class="n">emit</span><span class="p">((</span><span class="n">edge</span><span class="o">.</span><span class="n">parentnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">childnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">last_edge_clicked</span> <span class="o">=</span> <span class="n">edge</span>
+                    <span class="k">break</span></div>
+
+<div class="viewcode-block" id="GraphWidget.select_node"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.select_node">[docs]</a>    <span class="k">def</span> <span class="nf">select_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">old</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">nodepatch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nodepatch</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">new</span><span class="p">:</span>
+                <span class="n">nodepatch</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">nodepatch</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">old</span><span class="p">:</span>
+                <span class="n">nodepatch</span><span class="o">.</span><span class="n">deselect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.select_edge"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.select_edge">[docs]</a>    <span class="k">def</span> <span class="nf">select_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new</span><span class="p">,</span> <span class="n">old</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">edgepatch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edgepatch</span><span class="o">.</span><span class="n">parentnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">new</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">edgepatch</span><span class="o">.</span><span class="n">childnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">new</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">edgepatch</span><span class="o">.</span><span class="n">select</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">edgepatch</span><span class="o">.</span><span class="n">parentnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">old</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">edgepatch</span><span class="o">.</span><span class="n">childnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">old</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                <span class="n">edgepatch</span><span class="o">.</span><span class="n">deselect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.onpress"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.onpress">[docs]</a>    <span class="k">def</span> <span class="nf">onpress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mouseevent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mouseevent</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">picked</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deselect_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.onrelease"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.onrelease">[docs]</a>    <span class="k">def</span> <span class="nf">onrelease</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mouseevent</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">mouseevent</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">picked</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="p">(</span><span class="n">mouseevent</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">mouseevent</span><span class="o">.</span><span class="n">ydata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphWidget.contextMenuEvent"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.contextMenuEvent">[docs]</a>    <span class="k">def</span> <span class="nf">contextMenuEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Creates the context menu for the expert widget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">edge</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">picked</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">picked</span> <span class="ow">and</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_edge_clicked</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">):</span>
+            <span class="n">edge</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_edge_clicked</span>
+
+        <span class="n">menu</span> <span class="o">=</span> <span class="n">menus</span><span class="o">.</span><span class="n">GraphContextMenu</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">edge</span><span class="o">=</span><span class="n">edge</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphWidget.plot_node"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.plot_node">[docs]</a>    <span class="k">def</span> <span class="nf">plot_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crd</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">Node</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">nodepatch</span> <span class="o">=</span> <span class="n">NodePatch</span><span class="p">(</span>
+            <span class="n">ax</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="n">node</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">node_radius</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span>
+        <span class="p">)</span>
+        <span class="n">nodepatch</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">nodepatch</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.remove_node"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># Remove the patch</span>
+        <span class="n">nodepatch</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">nodepatch</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">nodepatch</span><span class="p">)</span>
+
+        <span class="c1"># Remove the edge patches</span>
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">childnode</span> <span class="o">==</span> <span class="n">nodepatch</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">edge</span><span class="o">.</span><span class="n">parentnode</span> <span class="o">==</span> <span class="n">nodepatch</span><span class="p">):</span>
+                <span class="n">edge</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">picked</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.remove_edgepatch"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.remove_edgepatch">[docs]</a>    <span class="k">def</span> <span class="nf">remove_edgepatch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">child</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">parentnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">parent</span> <span class="ow">and</span> <span class="n">edge</span><span class="o">.</span><span class="n">childnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">child</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="c1"># Remove patch</span>
+        <span class="n">edge</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">edge</span><span class="p">)</span>
+
+        <span class="c1"># Remove adjacent edges in nodes</span>
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">connected_edges</span><span class="p">))):</span>
+                <span class="n">adjacent</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">connected_edges</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">edge</span> <span class="o">==</span> <span class="n">adjacent</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">node</span><span class="o">.</span><span class="n">connected_edges</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">picked</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.delete_selected_object"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.delete_selected_object">[docs]</a>    <span class="k">def</span> <span class="nf">delete_selected_object</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">nodepatch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">nodepatch</span><span class="o">.</span><span class="n">selected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_about_to_be_removed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">nodepatch</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">edge</span><span class="o">.</span><span class="n">selected</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_about_to_be_removed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span>
+                    <span class="n">edge</span><span class="o">.</span><span class="n">parentnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">edge</span><span class="o">.</span><span class="n">childnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_distance</span><span class="p">(</span><span class="n">c1</span><span class="p">,</span> <span class="n">c2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">c1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">c2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">c1</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">c2</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="mf">0.5</span>
+
+<div class="viewcode-block" id="GraphWidget.get_nearest_node"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.get_nearest_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_nearest_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">crd</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">search_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+        <span class="n">dists</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodepatch</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_distance</span><span class="p">(</span><span class="n">nodepatch</span><span class="o">.</span><span class="n">xy</span><span class="p">,</span> <span class="n">crd</span><span class="p">)</span> <span class="k">for</span> <span class="n">nodepatch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">}</span>
+        <span class="n">nearest</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">dists</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">dists</span><span class="o">.</span><span class="n">get</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">search_radius</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">dists</span><span class="p">[</span><span class="n">nearest</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">search_radius</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">nearest</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="GraphWidget.wait_for_nodes"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.wait_for_nodes">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ncoords</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">ndone</span> <span class="o">=</span> <span class="mi">2</span>
+        <span class="c1"># Collect two coordinates</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">ndone</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread_running</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread_running</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">ncoords</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">node1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">node2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node_clicked</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+            <span class="k">if</span> <span class="n">node1</span> <span class="o">==</span> <span class="n">node2</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Select two different nodes when drawing an edge.&quot;</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">node1</span><span class="p">,</span> <span class="n">node2</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.wait_for_node_coordinate"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.wait_for_node_coordinate">[docs]</a>    <span class="k">def</span> <span class="nf">wait_for_node_coordinate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">progress_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1"># Collect two coordinateF</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_thread_running</span><span class="p">:</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_thread_running</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">coord</span></div>
+
+    <span class="c1"># def wait_for_delete_coordinate(self, progress_callback=None):</span>
+
+    <span class="c1">#     # Collect two coordinates</span>
+    <span class="c1">#     while self.coord is None and self.delete_thread_running:</span>
+    <span class="c1">#         time.sleep(0.1)</span>
+
+    <span class="c1">#     if not self.delete_thread_running:</span>
+    <span class="c1">#         return None</span>
+
+    <span class="c1">#     return self.coord</span>
+
+    <span class="c1"># def delete_coordinate_selected(self):</span>
+
+    <span class="c1">#     if self.last_edge_clicked is not None:</span>
+    <span class="c1">#         edge = self.last_edge_clicked</span>
+    <span class="c1">#         self.signals.edge_about_to_be_removed.emit(edge.parentnode.node.name, edge.childnode.node.name)</span>
+    <span class="c1">#         self.delete_thread.finished.emit()</span>
+
+    <span class="c1">#     elif len(self.last_node_clicked) &gt; 0:</span>
+    <span class="c1">#         node = self.last_node_clicked[-1]</span>
+    <span class="c1">#         self.signals.node_about_to_be_removed.emit(node)</span>
+    <span class="c1">#         self.delete_thread.finished.emit()</span>
+
+<div class="viewcode-block" id="GraphWidget.init_edge_thread"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.init_edge_thread">[docs]</a>    <span class="k">def</span> <span class="nf">init_edge_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Step 2: Create a QThread object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QThread</span><span class="p">()</span>
+        <span class="c1"># Step 3: Create a worker object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_for_nodes</span><span class="p">,</span> <span class="n">ncoords</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="c1"># Step 4: Move worker to the thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_worker</span><span class="o">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_thread</span><span class="p">)</span>
+        <span class="c1"># Step 5: Connect signals and slots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread</span><span class="o">.</span><span class="n">started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">edge_worker</span><span class="o">.</span><span class="n">run</span><span class="p">)</span>
+        <span class="c1"># self.edge_thread.started.connect(lambda: logger.info(&quot;Started edge thread&quot;))</span>
+        <span class="c1"># self.edge_worker.finished.connect(lambda: logger.info(&quot;Finished edge thread&quot;))</span>
+        <span class="c1"># self.edge_worker.finished.connect(self.edge_thread.quit)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_worker</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">edge_nodes_selected</span><span class="p">)</span>
+        <span class="c1"># self.edge_worker.result.connect(lambda: self.edge_worker.finished.emit())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_worker</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_graph_message</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="GraphWidget.init_node_thread"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.init_node_thread">[docs]</a>    <span class="k">def</span> <span class="nf">init_node_thread</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Step 2: Create a QThread object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_thread</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">QThread</span><span class="p">()</span>
+        <span class="c1"># Step 3: Create a worker object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_worker</span> <span class="o">=</span> <span class="n">Worker</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wait_for_node_coordinate</span><span class="p">)</span>
+        <span class="c1"># Step 4: Move worker to the thread</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_worker</span><span class="o">.</span><span class="n">moveToThread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_thread</span><span class="p">)</span>
+        <span class="c1"># Step 5: Connect signals and slots</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_thread</span><span class="o">.</span><span class="n">started</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_worker</span><span class="o">.</span><span class="n">run</span><span class="p">)</span>
+        <span class="c1"># self.node_thread.started.connect(lambda: logger.info(&quot;Started node thread&quot;))</span>
+        <span class="c1"># self.node_worker.finished.connect(lambda: logger.info(&quot;Finished node thread&quot;))</span>
+        <span class="c1"># self.node_worker.finished.connect(self.node_thread.quit)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_worker</span><span class="o">.</span><span class="n">result</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">node_coordinate_selected</span><span class="p">)</span>
+        <span class="c1"># self.node_worker.result.connect(lambda: self.node_worker.finished.emit())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_worker</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_graph_message</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">))</span></div>
+
+    <span class="c1"># def init_delete_thread(self):</span>
+    <span class="c1">#     # Step 2: Create a QThread object</span>
+    <span class="c1">#     self.delete_thread = QtCore.QThread()</span>
+    <span class="c1">#     # Step 3: Create a worker object</span>
+    <span class="c1">#     self.delete_worker = Worker(self.wait_for_delete_coordinate)</span>
+    <span class="c1">#     # Step 4: Move worker to the thread</span>
+    <span class="c1">#     self.delete_worker.moveToThread(self.delete_thread)</span>
+    <span class="c1">#     # Step 5: Connect signals and slots</span>
+    <span class="c1">#     self.delete_thread.started.connect(self.delete_worker.run)</span>
+    <span class="c1">#     # self.delete_thread.started.connect(lambda: logger.info(&quot;Started delete thread&quot;))</span>
+    <span class="c1">#     # self.delete_worker.finished.connect(lambda: print(&quot;Finished delete thread&quot;))</span>
+    <span class="c1">#     # self.delete_worker.finished.connect(self.delete_thread.quit)</span>
+    <span class="c1">#     self.delete_worker.result.connect(self.delete_coordinate_selected)</span>
+    <span class="c1">#     # self.delete_worker.result.connect(lambda: self.delete_worker.finished.emit())</span>
+    <span class="c1">#     self.delete_worker.finished.connect(lambda: self.signals.set_graph_message.emit(&quot;&quot;))</span>
+
+<div class="viewcode-block" id="GraphWidget.stop_threads"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.stop_threads">[docs]</a>    <span class="k">def</span> <span class="nf">stop_threads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_thread</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_thread_running</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">node_thread</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+
+        <span class="c1"># if self.delete_thread.isRunning():</span>
+        <span class="c1">#     self.delete_thread_running = False</span>
+        <span class="c1">#     self.delete_thread.quit()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread_running</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.start_add_edge"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.start_add_edge">[docs]</a>    <span class="k">def</span> <span class="nf">start_add_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Deselect all nodes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">deselect_all</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">disconnect_all</span><span class="p">()</span>
+        <span class="c1"># Make sure the other click threads are stopped</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">stop_running_click_threads</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_graph_message</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;Select two nodes to draw an edge&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread_running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edge_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.start_add_node"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.start_add_node">[docs]</a>    <span class="k">def</span> <span class="nf">start_add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">coord</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">stop_running_click_threads</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">set_graph_message</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="s2">&quot;Select the node position&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_thread_running</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span></div>
+
+    <span class="c1"># def start_delete_node_edge(self):</span>
+    <span class="c1">#     self.coord = None</span>
+    <span class="c1">#     self.last_edge_clicked = None</span>
+    <span class="c1">#     self.last_node_clicked.clear()</span>
+    <span class="c1">#     self.signals.stop_running_click_threads.emit()</span>
+    <span class="c1">#     self.signals.set_graph_message.emit(&quot;Select the node or edge to delete&quot;)</span>
+    <span class="c1">#     self.canvas.draw_idle()</span>
+    <span class="c1">#     self.delete_thread_running = True</span>
+    <span class="c1">#     self.delete_thread.start()</span>
+
+    <span class="k">def</span> <span class="nf">_get_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">nodepatch</span> <span class="k">for</span> <span class="n">nodepatch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="k">if</span> <span class="n">nodepatch</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<div class="viewcode-block" id="GraphWidget.plot_edge"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.plot_edge">[docs]</a>    <span class="k">def</span> <span class="nf">plot_edge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
+
+        <span class="n">ntail</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+        <span class="n">nhead</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_node</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+
+        <span class="n">edgepatch</span> <span class="o">=</span> <span class="n">EdgePatch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">,</span> <span class="n">parentnode</span><span class="o">=</span><span class="n">ntail</span><span class="p">,</span> <span class="n">childnode</span><span class="o">=</span><span class="n">nhead</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">edgepatch</span><span class="p">)</span>
+
+        <span class="n">ntail</span><span class="o">.</span><span class="n">connected_edges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">edgepatch</span><span class="p">,</span> <span class="s2">&quot;tail&quot;</span><span class="p">])</span>
+        <span class="n">nhead</span><span class="o">.</span><span class="n">connected_edges</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">edgepatch</span><span class="p">,</span> <span class="s2">&quot;head&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.change_node_name"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.change_node_name">[docs]</a>    <span class="k">def</span> <span class="nf">change_node_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="c1"># Get text object with old name and change name to new name</span>
+        <span class="k">for</span> <span class="n">nodepatch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">nodepatch</span><span class="o">.</span><span class="n">update_label</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.change_edge_labels"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.change_edge_labels">[docs]</a>    <span class="k">def</span> <span class="nf">change_edge_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">edgepatch</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span>
+            <span class="n">edgepatch</span><span class="o">.</span><span class="n">update_label</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="GraphWidget.increase_dpi"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.increase_dpi">[docs]</a>    <span class="k">def</span> <span class="nf">increase_dpi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.1</span><span class="p">):</span>
+        <span class="n">current_dpi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">get_dpi</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_figure_dpi</span><span class="p">(</span><span class="n">current_dpi</span> <span class="o">*</span> <span class="n">factor</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphWidget.decrease_dpi"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.GraphWidget.decrease_dpi">[docs]</a>    <span class="k">def</span> <span class="nf">decrease_dpi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.1</span><span class="p">):</span>
+        <span class="n">current_dpi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">get_dpi</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_figure_dpi</span><span class="p">(</span><span class="n">current_dpi</span> <span class="o">/</span> <span class="n">factor</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_figure_dpi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_dpi</span><span class="p">):</span>
+        <span class="n">current_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">get_size_inches</span><span class="p">()</span>
+        <span class="n">current_dpi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">get_dpi</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">set_dpi</span><span class="p">(</span><span class="n">new_dpi</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">current_size</span> <span class="o">*</span> <span class="n">current_dpi</span> <span class="o">/</span> <span class="n">new_dpi</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="EdgePatch"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.EdgePatch">[docs]</a><span class="k">class</span> <span class="nc">EdgePatch</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">parentnode</span><span class="p">,</span> <span class="n">childnode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">childnode</span> <span class="o">=</span> <span class="n">childnode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parentnode</span> <span class="o">=</span> <span class="n">parentnode</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">xtail</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ytail</span> <span class="o">=</span> <span class="n">parentnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">parentnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">xhead</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yhead</span> <span class="o">=</span> <span class="n">childnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">childnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">y</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+
+        <span class="n">chead</span><span class="p">,</span> <span class="n">ctail</span><span class="p">,</span> <span class="n">textx</span><span class="p">,</span> <span class="n">texty</span><span class="p">,</span> <span class="n">textrot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">arrow</span> <span class="o">=</span> <span class="n">FancyArrowPatch</span><span class="p">(</span>
+            <span class="n">ctail</span><span class="p">,</span> <span class="n">chead</span><span class="p">,</span> <span class="n">mutation_scale</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;k&quot;</span><span class="p">,</span> <span class="n">shrinkA</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">shrinkB</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">picker</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">arrow</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">textx</span><span class="p">,</span> <span class="n">texty</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="n">textrot</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="EdgePatch.remove"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.EdgePatch.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arrow</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EdgePatch.update_position"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.EdgePatch.update_position">[docs]</a>    <span class="k">def</span> <span class="nf">update_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ctail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">chead</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># Check which of the connecting nodes had changed</span>
+        <span class="k">if</span> <span class="n">ctail</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xtail</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ytail</span> <span class="o">=</span> <span class="n">ctail</span>
+        <span class="k">if</span> <span class="n">chead</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">xhead</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yhead</span> <span class="o">=</span> <span class="n">chead</span>
+
+        <span class="c1"># Get the new radius offsets</span>
+        <span class="n">chead</span><span class="p">,</span> <span class="n">ctail</span><span class="p">,</span> <span class="n">textx</span><span class="p">,</span> <span class="n">texty</span><span class="p">,</span> <span class="n">textrot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_positions</span><span class="p">()</span>
+        <span class="c1"># Set the new arrow positions</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arrow</span><span class="o">.</span><span class="n">set_positions</span><span class="p">(</span><span class="n">ctail</span><span class="p">,</span> <span class="n">chead</span><span class="p">)</span>
+
+        <span class="c1"># Change position of text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="n">textx</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="n">texty</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_rotation</span><span class="p">(</span><span class="n">textrot</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EdgePatch.get_positions"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.EdgePatch.get_positions">[docs]</a>    <span class="k">def</span> <span class="nf">get_positions</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.05</span><span class="p">):</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan2</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">yhead</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">ytail</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xhead</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">xtail</span><span class="p">))</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span> <span class="o">*</span> <span class="n">radius</span>
+
+        <span class="n">chead</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xhead</span> <span class="o">-</span> <span class="n">dx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yhead</span> <span class="o">-</span> <span class="n">dy</span><span class="p">)</span>
+        <span class="n">ctail</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xtail</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ytail</span> <span class="o">+</span> <span class="n">dy</span><span class="p">)</span>
+
+        <span class="n">alpha</span> <span class="o">=</span> <span class="p">((</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">%</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span>
+        <span class="n">textx</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">xtail</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">xhead</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.015</span>
+        <span class="n">texty</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ytail</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">yhead</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">alpha</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.015</span>
+        <span class="n">textrot</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">degrees</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">chead</span><span class="p">,</span> <span class="n">ctail</span><span class="p">,</span> <span class="n">textx</span><span class="p">,</span> <span class="n">texty</span><span class="p">,</span> <span class="n">textrot</span></div>
+
+<div class="viewcode-block" id="EdgePatch.toggle_selection"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.EdgePatch.toggle_selection">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deselect</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="EdgePatch.select"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.EdgePatch.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arrow</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EdgePatch.deselect"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.EdgePatch.deselect">[docs]</a>    <span class="k">def</span> <span class="nf">deselect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">arrow</span><span class="o">.</span><span class="n">set_facecolor</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="EdgePatch.update_label"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.EdgePatch.update_label">[docs]</a>    <span class="k">def</span> <span class="nf">update_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Get the rank correlation string from the edge tabel</span>
+        <span class="n">iparent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">childnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">parent_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">parentnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">childnode</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">iparent</span><span class="p">]</span><span class="o">.</span><span class="n">string</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;r_&quot;</span><span class="p">,</span> <span class="s2">&quot;r$_{&quot;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;}$&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NodePatch"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch">[docs]</a><span class="k">class</span> <span class="nc">NodePatch</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span> <span class="o">=</span> <span class="n">ax</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circle</span> <span class="o">=</span> <span class="n">Circle</span><span class="p">(</span>
+            <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">),</span> <span class="n">radius</span><span class="o">=</span><span class="n">radius</span><span class="p">,</span> <span class="n">facecolor</span><span class="o">=</span><span class="n">facecolor</span><span class="p">,</span> <span class="n">edgecolor</span><span class="o">=</span><span class="n">edgecolor</span><span class="p">,</span> <span class="n">picker</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">node</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_label</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">events_connected</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connected_edges</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="NodePatch.remove"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.remove">[docs]</a>    <span class="k">def</span> <span class="nf">remove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NodePatch.update_label"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.update_label">[docs]</a>    <span class="k">def</span> <span class="nf">update_label</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_text</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodePatch.toggle_selection"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.toggle_selection">[docs]</a>    <span class="k">def</span> <span class="nf">toggle_selection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">selected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">deselect</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NodePatch.select"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.select">[docs]</a>    <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="o">.</span><span class="n">set_edgecolor</span><span class="p">(</span><span class="s2">&quot;red&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodePatch.deselect"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.deselect">[docs]</a>    <span class="k">def</span> <span class="nf">deselect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">selected</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="o">.</span><span class="n">set_edgecolor</span><span class="p">(</span><span class="s2">&quot;black&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="o">.</span><span class="n">set_linewidth</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodePatch.change_position"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.change_position">[docs]</a>    <span class="k">def</span> <span class="nf">change_position</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">xynew</span><span class="p">):</span>
+        <span class="c1"># Change position of circle</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="o">.</span><span class="n">set_center</span><span class="p">(</span><span class="n">xynew</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">node</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="n">xynew</span>
+
+        <span class="c1"># Change position of egdes</span>
+        <span class="k">for</span> <span class="n">edge</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connected_edges</span><span class="p">:</span>
+            <span class="n">edge</span><span class="o">.</span><span class="n">update_position</span><span class="p">(</span>
+                <span class="n">ctail</span><span class="o">=</span><span class="n">xynew</span> <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="s2">&quot;tail&quot;</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span> <span class="n">chead</span><span class="o">=</span><span class="n">xynew</span> <span class="k">if</span> <span class="n">end</span> <span class="o">==</span> <span class="s2">&quot;head&quot;</span> <span class="k">else</span> <span class="kc">None</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Change position of text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_x</span><span class="p">(</span><span class="n">xynew</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="n">xynew</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="NodePatch.connect"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Connect to all the events we need.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">events_connected</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cidpress</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;button_press_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_press</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cidrelease</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;button_release_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_release</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cidmotion</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_connect</span><span class="p">(</span><span class="s2">&quot;motion_notify_event&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_motion</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodePatch.on_press"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.on_press">[docs]</a>    <span class="k">def</span> <span class="nf">on_press</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Check whether mouse is over us; if so, store some data.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">contains</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="o">.</span><span class="n">contains_point</span><span class="p">((</span><span class="n">event</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">y</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">contains</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">circle</span><span class="o">.</span><span class="n">center</span><span class="p">,</span> <span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">xdata</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NodePatch.on_motion"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.on_motion">[docs]</a>    <span class="k">def</span> <span class="nf">on_motion</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Move the rectangle if the mouse is over us.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">event</span><span class="o">.</span><span class="n">inaxes</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">),</span> <span class="p">(</span><span class="n">xpress</span><span class="p">,</span> <span class="n">ypress</span><span class="p">)</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">press</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">xdata</span> <span class="o">-</span> <span class="n">xpress</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">ydata</span> <span class="o">-</span> <span class="n">ypress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">change_position</span><span class="p">((</span><span class="n">x0</span> <span class="o">+</span> <span class="n">dx</span><span class="p">,</span> <span class="n">y0</span> <span class="o">+</span> <span class="n">dy</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw_idle</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NodePatch.on_release"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.on_release">[docs]</a>    <span class="k">def</span> <span class="nf">on_release</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Clear button press information.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">press</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="NodePatch.disconnect"><a class="viewcode-back" href="../../../ui/graph.html#matlatzinca.ui.graph.NodePatch.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Disconnect all callbacks.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">events_connected</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">events_connected</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cidpress</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cidrelease</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ax</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">canvas</span><span class="o">.</span><span class="n">mpl_disconnect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cidmotion</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Guus Rongen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

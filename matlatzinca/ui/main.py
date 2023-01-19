@@ -1,8 +1,10 @@
 import logging
+import subprocess
 import sys
 import traceback
 from pathlib import Path
 
+from matlatzinca import __version__
 from matlatzinca.core.models import Node
 from matlatzinca.core.project import Project
 from matlatzinca.ui import widgets
@@ -108,9 +110,7 @@ class Signals(QtCore.QObject):
         # self.correlation_changed.connect(lambda: self.mainwindow.matrix_widget.update_correlation_matrix)
 
         # Connect print signals
-        self.selected.connect(
-            lambda s: logger.info(f"Clicked {'edge' if isinstance(s, tuple) == 1 else 'node'} {s}.")
-        )
+        self.selected.connect(lambda s: logger.info(f"Clicked {'edge' if isinstance(s, tuple) == 1 else 'node'} {s}."))
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -306,16 +306,12 @@ class MainWindow(QtWidgets.QMainWindow):
         new_action.setStatusTip("Create a new project")
         new_action.triggered.connect(self.project.new)
 
-        openAction = QtWidgets.QAction(
-            self.style().standardIcon(QtWidgets.QStyle.SP_DirOpenIcon), "Open", self
-        )
+        openAction = QtWidgets.QAction(self.style().standardIcon(QtWidgets.QStyle.SP_DirOpenIcon), "Open", self)
         openAction.setStatusTip("Open project")
         openAction.setShortcut(QtGui.QKeySequence.Open)
         openAction.triggered.connect(self.project.open)
 
-        saveAction = QtWidgets.QAction(
-            self.style().standardIcon(QtWidgets.QStyle.SP_DialogSaveButton), "Save", self
-        )
+        saveAction = QtWidgets.QAction(self.style().standardIcon(QtWidgets.QStyle.SP_DialogSaveButton), "Save", self)
         saveAction.setStatusTip("Save project")
         saveAction.setShortcut(QtGui.QKeySequence.Save)
         saveAction.triggered.connect(self.project.save)
@@ -344,12 +340,8 @@ class MainWindow(QtWidgets.QMainWindow):
         file_menu.addAction(exitAction)
 
         view_menu = menubar.addMenu("&View")
-        view_menu.addAction(
-            "Increase UI font", lambda: self.change_font_size(1), QtGui.QKeySequence("Ctrl+=")
-        )
-        view_menu.addAction(
-            "Decrease UI font", lambda: self.change_font_size(-1), QtGui.QKeySequence("Ctrl+-")
-        )
+        view_menu.addAction("Increase UI font", lambda: self.change_font_size(1), QtGui.QKeySequence("Ctrl+="))
+        view_menu.addAction("Decrease UI font", lambda: self.change_font_size(-1), QtGui.QKeySequence("Ctrl+-"))
         view_menu.addSeparator()
 
         def _increase_dpi():
@@ -366,9 +358,7 @@ class MainWindow(QtWidgets.QMainWindow):
         export_menu = menubar.addMenu("&Export")
         export_R_menu = export_menu.addMenu("&Correlation Matrix")
         export_R_menu.addAction("To CSV", lambda: self.project.export("correlation_matrix", "csv"))
-        export_R_menu.addAction(
-            "To clipboard", lambda: self.project.export("correlation_matrix", "clipboard")
-        )
+        export_R_menu.addAction("To clipboard", lambda: self.project.export("correlation_matrix", "clipboard"))
 
         export_nodes_menu = export_menu.addMenu("&Nodes")
         export_nodes_menu.addAction("To CSV", lambda: self.project.export("nodes", "csv"))
@@ -377,3 +367,34 @@ class MainWindow(QtWidgets.QMainWindow):
         export_nodes_menu = export_menu.addMenu("&Edges")
         export_nodes_menu.addAction("To CSV", lambda: self.project.export("edges", "csv"))
         export_nodes_menu.addAction("To clipboard", lambda: self.project.export("edges", "clipboard"))
+
+        help_menu = menubar.addMenu("&Help")
+        doc_action = QtWidgets.QAction(
+            self.style().standardIcon(QtWidgets.QStyle.SP_FileDialogDetailedView), "Documentation", self
+        )
+        doc_action.setStatusTip("Open Anduryl documentation")
+        doc_action.triggered.connect(self.open_documentation)
+        help_menu.addAction(doc_action)
+
+        about_action = QtWidgets.QAction(QtGui.QIcon(), "Version", self)
+        about_action.triggered.connect(self.open_about)
+        help_menu.addAction(about_action)
+
+    def open_about(self):
+        text = f"Version: {__version__}"
+        Qt.QMessageBox.about(self, "Matlatzinca version", text)
+
+    def open_documentation(self):
+
+        # In case of PyInstaller exe
+        if getattr(sys, "frozen", False):
+            application_path = sys._MEIPASS
+            indexpath = application_path / "doc" / "index.html"
+
+        # In case of regular python
+        else:
+            application_path = Path(__file__).resolve().parent
+            indexpath = application_path / '..' / '..' / "doc" / 'build' / 'html' / "index.html"
+
+        # Open index html
+        subprocess.Popen(str(indexpath), shell=True)
