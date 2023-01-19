@@ -4,4 +4,3 @@ call conda create -y -n matlatzinca python=3.10 pip setuptools Pyinstaller pydan
 call conda activate matlatzinca
 REM call pip install [DOWNLOAD VANILLA WHEEL FROM https://www.lfd.uci.edu/~gohlke/pythonlibs/#numpy]
 REM call pip install pyqt5 matplotlib
-REM conda remove --name matlatzinca --all
